@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.2.0 - Use Cases & Validation (2026-04-08)
+
+### Breaking Changes
+
+- Use cases now use **named parameters** instead of positional
+- Vault usecases split into individual files
+
+### New Files
+
+- `lib/src/core/usecases/create_vault.dart`
+- `lib/src/core/usecases/load_vault.dart`
+- `lib/src/core/usecases/save_vault.dart`
+- `lib/src/core/usecases/create_note.dart`
+- `lib/src/core/usecases/create_folder.dart`
+- `lib/src/core/usecases/create_link.dart`
+- `lib/src/core/usecases/update_note.dart`
+- `lib/src/core/usecases/validate_markdown.dart`
+
+### Features
+
+- `CreateNote` now validates markdown before creating
+- `FileExistsFailure` for existing file errors
+- `InvalidMarkdownFailure` for validation errors
+- `overwrite` parameter for forcing note creation
+- `path` parameter for subfolder note creation
+
+### API Changes
+
+- All `call()` methods now use named parameters
+- Note creation handles nested paths (`folder/subfolder/note.md`)
+
 ## 1.1.0 - Improved Load API (2026-04-08)
 
 ### Breaking Changes

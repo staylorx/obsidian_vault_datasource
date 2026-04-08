@@ -43,6 +43,11 @@ class FolderAlreadyExistsFailure extends Failure {
       : super('Folder already exists: $name');
 }
 
+/// File already exists.
+class FileExistsFailure extends Failure {
+  const FileExistsFailure(String path) : super('File already exists: $path');
+}
+
 /// Link target note was not found.
 class LinkTargetNotFoundFailure extends Failure {
   const LinkTargetNotFoundFailure(String target)
@@ -52,4 +57,10 @@ class LinkTargetNotFoundFailure extends Failure {
 /// Property not found on a note.
 class PropertyNotFoundFailure extends Failure {
   const PropertyNotFoundFailure(String key) : super('Property not found: $key');
+}
+
+/// Invalid markdown content.
+class InvalidMarkdownFailure extends Failure {
+  const InvalidMarkdownFailure(String reason)
+      : super('Invalid markdown: $reason');
 }

@@ -76,7 +76,7 @@ class ObsidianVault {
     final saveVault = SaveVault(fileSystemAdapter, noteRepository);
     final loadVaultUseCase = LoadVault(fileSystemAdapter, noteRepository);
 
-    return loadVaultUseCase(path).map((loadedVault) => ObsidianVault._(
+    return loadVaultUseCase(path: path).map((loadedVault) => ObsidianVault._(
           loadedVault,
           fileSystemAdapter,
           noteRepository,
@@ -99,7 +99,7 @@ class ObsidianVault {
           Left(const Failure('Cannot reload: vault was not loaded')));
     }
 
-    return loadVaultUseCase(_vault.path).map((loadedVault) {
+    return loadVaultUseCase(path: _vault.path).map((loadedVault) {
       return ObsidianVault._(
         loadedVault,
         _fileSystemAdapter,
@@ -139,13 +139,20 @@ class ObsidianVault {
   /// Creates a new note in the vault.
   ///
   /// [title] is the note title. [content] is optional initial content.
+  /// Set [overwrite] to true to replace an existing note.
   TaskEither<Failure, ObsidianNote> createNote({
     required String title,
     String content = '',
+    bool overwrite = false,
   }) {
-    return _createNote(_vault, title, content: content).map((note) {
+    return _createNote(
+            vault: _vault, title: title, content: content, overwrite: overwrite)
+        .map((note) {
       final updatedFolder = _vault.rootFolder.copyWith(
-        notes: [..._vault.rootFolder.notes, note],
+        notes: [
+          ..._vault.rootFolder.notes.where((n) => n.title != title),
+          note
+        ],
       );
       final updatedVault = _vault.copyWith(rootFolder: updatedFolder);
       return ObsidianNote._(
@@ -153,6 +160,7 @@ class ObsidianVault {
         updatedVault,
         _fileSystemAdapter,
         _noteRepository,
+        _createNote,
         _createLink,
       );
     });
@@ -162,12 +170,12 @@ class ObsidianVault {
   ///
   /// [name] is the folder name.
   TaskEither<Failure, Unit> createFolder({required String name}) {
-    return _createFolder(_vault, name);
+    return _createFolder(vault: _vault, name: name);
   }
 
   /// Saves all vault notes to disk.
   TaskEither<Failure, Unit> save() {
-    return _saveVault(_vault);
+    return _saveVault(vault: _vault);
   }
 
   /// Refreshes the vault by re-reading from disk.
@@ -310,6 +318,7 @@ class ObsidianFolder {
   final Vault _vault;
   final FileSystemAdapter _fileSystemAdapter;
   final NoteRepository _noteRepository;
+  final CreateNote _createNote;
   final CreateLink _createLink;
 
   ObsidianFolder._(
@@ -317,6 +326,7 @@ class ObsidianFolder {
     this._vault,
     this._fileSystemAdapter,
     this._noteRepository,
+    this._createNote,
     this._createLink,
   );
 
@@ -347,26 +357,32 @@ class ObsidianFolder {
   /// Creates a note in this folder.
   ///
   /// [title] is the note title. [content] is optional initial content.
+  /// Set [overwrite] to true to replace an existing note.
   TaskEither<Failure, ObsidianNote> createNote({
     required String title,
     String content = '',
+    bool overwrite = false,
   }) {
     final notePath = _fileSystemAdapter.joinPaths(_vault.path,
         '${_folder.name.isNotEmpty ? _folder.name + Platform.pathSeparator : ''}$title.md');
-    final note = Note(title: title, content: content, path: notePath);
 
-    return TaskEither(() async {
-      final result = await _noteRepository.writeNote(notePath, note);
-      return result.map((_) {
-        final updatedFolder = _folder.copyWith(notes: [..._folder.notes, note]);
-        return ObsidianNote._(
-          note,
-          _vault.copyWith(rootFolder: updatedFolder),
-          _fileSystemAdapter,
-          _noteRepository,
-          _createLink,
-        );
-      });
+    return _createNote(
+            vault: _vault,
+            title: title,
+            content: content,
+            overwrite: overwrite,
+            path: notePath)
+        .map((note) {
+      final updatedFolder = _folder.copyWith(
+          notes: [..._folder.notes.where((n) => n.title != title), note]);
+      return ObsidianNote._(
+        note,
+        _vault.copyWith(rootFolder: updatedFolder),
+        _fileSystemAdapter,
+        _noteRepository,
+        _createNote,
+        _createLink,
+      );
     });
   }
 }
@@ -377,6 +393,7 @@ class ObsidianNote {
   final Vault _vault;
   final FileSystemAdapter _fileSystemAdapter;
   final NoteRepository _noteRepository;
+  final CreateNote _createNote;
   final CreateLink _createLink;
 
   ObsidianNote._(
@@ -384,6 +401,7 @@ class ObsidianNote {
     this._vault,
     this._fileSystemAdapter,
     this._noteRepository,
+    this._createNote,
     this._createLink,
   );
 
@@ -472,8 +490,11 @@ class ObsidianNote {
     String? alias,
     bool createIfMissing = false,
   }) {
-    return _createLink(_note, targetTitle,
-            alias: alias, createIfMissing: createIfMissing)
+    return _createLink(
+            ref: _note,
+            targetTitle: targetTitle,
+            alias: alias,
+            createIfMissing: createIfMissing)
         .map((updatedNote) {
       final updatedNotes = _vault.rootFolder.notes
           .map((n) => n.title == _note.title ? updatedNote : n)
@@ -485,6 +506,7 @@ class ObsidianNote {
         updatedVault,
         _fileSystemAdapter,
         _noteRepository,
+        _createNote,
         _createLink,
       );
     });
@@ -505,6 +527,7 @@ class ObsidianNote {
             updatedVault,
             _fileSystemAdapter,
             _noteRepository,
+            _createNote,
             _createLink,
           );
         });
@@ -514,6 +537,7 @@ class ObsidianNote {
         _vault,
         _fileSystemAdapter,
         _noteRepository,
+        _createNote,
         _createLink,
       ));
     });
