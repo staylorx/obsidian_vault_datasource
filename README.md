@@ -60,7 +60,7 @@ import 'package:obsidian_vault_datasource/obsidian_vault_datasource.dart';
 
 void main() async {
   // Load an existing vault - returns TaskEither, auto-refreshes
-  final vaultResult = await ObsidianVault.load('/path/to/vault').run();
+  final vaultResult = await ObsidianVault.load(path: '/path/to/vault').run();
   final vault = vaultResult.fold((f) => throw Exception(f), (v) => v);
   
   // Create a note
@@ -76,8 +76,8 @@ void main() async {
 
 | Method | Description |
 |--------|-------------|
-| `ObsidianVault.create(path, name)` | Creates new vault directory |
-| `ObsidianVault.load(path)` | Loads existing vault |
+| `ObsidianVault.create(path: 'path', name: 'name')` | Creates new vault directory |
+| `ObsidianVault.load(path: 'path')` | Loads existing vault |
 | `vault.refresh()` | Reloads vault from disk |
 | `vault.createNote(title, content)` | Creates a note |
 | `vault.createFolder(name)` | Creates a folder |
@@ -109,4 +109,4 @@ MIT License - see [LICENSE](LICENSE) file.
 
 ## Trademark Notice
 
-Flutter and Dart logos are trademarks of Google. The Flutter and Dart images included in this project or documentation are owned by their copyright holder, Google. This project is not affiliated with or endorsed by Google.
+Flutter and Dart logos are trademarks of Google. Obsidian logs are trademarks of Obsidian. All images included in this project or documentation are owned by their respective copyright holders.

@@ -4,6 +4,7 @@ import '../../domain/entities/entities.dart';
 import '../../domain/failures.dart';
 import '../adapters/file_system_adapter.dart';
 
+/// Repository for persisting and retrieving attachments.
 class AttachmentRepository {
   AttachmentRepository(this._fileSystemAdapter);
 

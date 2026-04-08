@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
-class Link extends Equatable {
+/// Represents a wiki-style link between notes in an Obsidian vault.
+class Link with EquatableMixin {
   const Link({
     required this.target,
     this.alias,

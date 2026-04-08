@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+/// Types of frontmatter properties supported in Obsidian notes.
 enum PropertyType {
   string,
   number,
@@ -8,7 +9,8 @@ enum PropertyType {
   list,
 }
 
-class Property extends Equatable {
+/// Represents a frontmatter property in an Obsidian note.
+class Property with EquatableMixin {
   const Property({
     required this.key,
     required this.value,

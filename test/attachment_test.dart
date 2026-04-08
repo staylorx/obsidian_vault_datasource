@@ -12,8 +12,8 @@ void main() {
 
       setUp(() async {
         tempDir = Directory.systemTemp.createTempSync('obsidian_test_').path;
-        vault = ObsidianVault.create(tempDir, 'test_vault');
-        await vault.createNote('Test Note').run();
+        vault = ObsidianVault.create(path: tempDir, name: 'test_vault');
+        await vault.createNote(title: 'Test Note').run();
       });
 
       tearDown(() async {
@@ -54,8 +54,9 @@ void main() {
       test('should write attachment to vault', () async {
         final testBytes = <int>[0x00, 0x01, 0x02, 0x03];
 
-        final result =
-            await vault.writeAttachment('new_file.png', testBytes).run();
+        final result = await vault
+            .writeAttachment(fileName: 'new_file.png', bytes: testBytes)
+            .run();
 
         result.isRight().should.beTrue();
         final file = File(p.join(tempDir, 'new_file.png'));
@@ -70,7 +71,7 @@ void main() {
         await File(filePath).writeAsBytes(testBytes);
 
         final deleteResult =
-            await vault.deleteAttachment('to_delete.png').run();
+            await vault.deleteAttachment(fileName: 'to_delete.png').run();
 
         deleteResult.isRight().should.beTrue();
         File(filePath).existsSync().should.be(false);
@@ -81,7 +82,8 @@ void main() {
         final filePath = p.join(tempDir, 'read_test.png');
         await File(filePath).writeAsBytes(testBytes);
 
-        final result = await vault.readAttachmentBytes('read_test.png').run();
+        final result =
+            await vault.readAttachmentBytes(fileName: 'read_test.png').run();
 
         result.isRight().should.beTrue();
         final bytes = result.getOrElse((f) => <int>[]);
@@ -93,7 +95,8 @@ void main() {
         final filePath = p.join(tempDir, 'specific.png');
         await File(filePath).writeAsBytes(testBytes);
 
-        final result = await vault.getAttachment('specific.png').run();
+        final result =
+            await vault.getAttachment(fileName: 'specific.png').run();
 
         result.isRight().should.beTrue();
         final attachment = result.getOrElse((f) => Attachment(

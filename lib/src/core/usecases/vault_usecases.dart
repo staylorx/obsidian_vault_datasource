@@ -5,6 +5,7 @@ import '../../domain/failures.dart';
 import '../../data/adapters/file_system_adapter.dart';
 import '../../data/repositories/note_repository.dart';
 
+/// Use case for creating a new vault directory.
 class CreateVault {
   final FileSystemAdapter _fileSystemAdapter;
 
@@ -35,6 +36,7 @@ class CreateVault {
   }
 }
 
+/// Use case for loading an existing vault from disk.
 class LoadVault {
   final FileSystemAdapter _fileSystemAdapter;
   final NoteRepository _noteRepository;
@@ -75,6 +77,7 @@ class LoadVault {
   }
 }
 
+/// Use case for saving a vault's notes to disk.
 class SaveVault {
   final FileSystemAdapter _fileSystemAdapter;
   final NoteRepository _noteRepository;
@@ -97,6 +100,7 @@ class SaveVault {
   }
 }
 
+/// Use case for creating a new note in a vault.
 class CreateNote {
   final FileSystemAdapter _fileSystemAdapter;
   final NoteRepository _noteRepository;
@@ -121,6 +125,7 @@ class CreateNote {
   }
 }
 
+/// Use case for creating a new folder in a vault.
 class CreateFolder {
   final FileSystemAdapter _fileSystemAdapter;
 
@@ -134,6 +139,7 @@ class CreateFolder {
   }
 }
 
+/// Use case for creating a link between notes.
 class CreateLink {
   final NoteRepository _noteRepository;
 

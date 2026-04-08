@@ -7,7 +7,7 @@ void main() async {
   final vaultPath = 'examples/example_vault';
   print('Loading vault from: $vaultPath');
 
-  final vaultResult = await ObsidianVault.load(vaultPath).run();
+  final vaultResult = await ObsidianVault.load(path: vaultPath).run();
   final loadedVault = vaultResult.fold((failure) {
     print('Failed to load: $failure');
     exit(1);
@@ -43,14 +43,14 @@ void main() async {
   }
 
   print('\n=== Search Notes ===');
-  final searchResults = loadedVault.searchNotes('Dart');
+  final searchResults = loadedVault.searchNotes(query: 'Dart');
   print('Found ${searchResults.length} notes matching "Dart":');
   for (final note in searchResults) {
     print('- ${note.title}');
   }
 
   print('\n=== Find Specific Note ===');
-  final welcomeNote = loadedVault.findNote('Welcome to Your Vault');
+  final welcomeNote = loadedVault.findNote(title: 'Welcome to Your Vault');
   if (welcomeNote != null) {
     print('Found: ${welcomeNote.title}');
     print(

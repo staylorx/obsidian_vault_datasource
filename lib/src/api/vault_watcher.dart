@@ -4,12 +4,14 @@ import 'package:fpdart/fpdart.dart';
 import '../domain/failures.dart';
 import 'obsidian_api.dart';
 
+/// Types of file changes detected by the vault watcher.
 enum VaultChangeType {
   created,
   modified,
   deleted,
 }
 
+/// Represents a change to a file in the vault.
 class VaultChange {
   const VaultChange(this.type, this.path);
 
@@ -20,6 +22,7 @@ class VaultChange {
   String toString() => 'VaultChange($type, $path)';
 }
 
+/// Watches a vault for file system changes using streams.
 class VaultWatcher {
   VaultWatcher(this._obsidianVault);
 

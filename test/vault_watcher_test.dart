@@ -5,56 +5,50 @@ import 'dart:io';
 
 void main() {
   group('Given a VaultWatcher', () {
-    late String tempVaultPath;
-    late ObsidianVault vault;
+    group('when starting and stopping', () {
+      late String tempVaultPath;
+      late ObsidianVault vault;
 
-    setUp(() async {
-      tempVaultPath = Directory.systemTemp.createTempSync('watch_test_').path;
-      vault = ObsidianVault.create(tempVaultPath, 'Test');
-      await vault.createNote('Initial Note').run();
-    });
+      setUp(() async {
+        tempVaultPath =
+            Directory.systemTemp.createTempSync('watcher_test_').path;
+        vault = ObsidianVault.create(path: tempVaultPath, name: 'Test');
+        await vault.createNote(title: 'Initial Note').run();
+      });
 
-    tearDown(() {
-      try {
-        Directory(tempVaultPath).deleteSync(recursive: true);
-      } catch (_) {}
-    });
+      tearDown(() async {
+        await Directory(tempVaultPath).delete(recursive: true);
+      });
 
-    test('should start and stop watching vault', () async {
-      final watcher = vault.watch();
+      test('should start and stop watching vault', () async {
+        final watcher = vault.watch();
 
-      final startResult = await watcher.start().run();
-      startResult.isRight().should.beTrue();
+        final startResult = await watcher.start().run();
+        startResult.isRight().should.beTrue();
 
-      final stopResult = await watcher.stop().run();
-      stopResult.isRight().should.beTrue();
+        final stopResult = await watcher.stop().run();
+        stopResult.isRight().should.beTrue();
 
-      watcher.dispose();
-    });
+        watcher.dispose();
+      });
 
-    test('should be reusable after stop and start', () async {
-      final watcher = vault.watch();
+      test('should be reusable after stop and start', () async {
+        final watcher = vault.watch();
 
-      await watcher.start().run();
-      await watcher.stop().run();
+        await watcher.start().run();
+        await watcher.stop().run();
 
-      final startAgain = await watcher.start().run();
-      startAgain.isRight().should.beTrue();
+        final startAgain = await watcher.start().run();
+        startAgain.isRight().should.beTrue();
 
-      await watcher.stop().run();
-      watcher.dispose();
-    });
+        watcher.dispose();
+      });
 
-    test('watcher changes stream should be a broadcast stream', () async {
-      final watcher = vault.watch();
-
-      await watcher.start().run();
-
-      final changes = watcher.changes;
-      changes.should.not.beNull();
-
-      await watcher.stop().run();
-      watcher.dispose();
+      test('watcher changes stream should be a broadcast stream', () {
+        final watcher = vault.watch();
+        watcher.changes.isBroadcast.should.beTrue();
+        watcher.dispose();
+      });
     });
   });
 }

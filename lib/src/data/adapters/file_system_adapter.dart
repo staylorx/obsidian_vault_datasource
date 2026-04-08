@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:fpdart/fpdart.dart';
 import '../../domain/failures.dart';
 
+/// Abstracts file system operations for cross-platform support and testability.
 class FileSystemAdapter {
   FileSystemAdapter();
 

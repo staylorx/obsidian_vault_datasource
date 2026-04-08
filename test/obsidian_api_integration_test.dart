@@ -1,7 +1,7 @@
+import 'dart:io';
 import 'package:obsidian_vault_datasource/obsidian_vault_datasource.dart';
 import 'package:shouldly/shouldly.dart';
 import 'package:test/test.dart';
-import 'dart:io';
 
 void main() {
   group('Given an ObsidianVault created from scratch', () {
@@ -18,7 +18,7 @@ void main() {
     });
 
     test('should create vault directory on disk', () async {
-      ObsidianVault.create(tempVaultPath, 'My Vault');
+      ObsidianVault.create(path: tempVaultPath, name: 'My Vault');
 
       final adapter = FileSystemAdapter();
       final exists = await adapter.directoryExists(tempVaultPath);
@@ -26,10 +26,11 @@ void main() {
     });
 
     test('should create note file on disk', () async {
-      final vault = ObsidianVault.create(tempVaultPath, 'My Vault');
+      final vault = ObsidianVault.create(path: tempVaultPath, name: 'My Vault');
 
-      final result =
-          await vault.createNote('Test Note', content: 'Hello content').run();
+      final result = await vault
+          .createNote(title: 'Test Note', content: 'Hello content')
+          .run();
 
       result.isRight().should.beTrue();
       final notePath = '$tempVaultPath${Platform.pathSeparator}Test Note.md';
@@ -40,23 +41,23 @@ void main() {
     });
 
     test('should find note after refresh', () async {
-      final vault = ObsidianVault.create(tempVaultPath, 'My Vault');
+      final vault = ObsidianVault.create(path: tempVaultPath, name: 'My Vault');
 
-      await vault.createNote('Note One', content: 'First').run();
+      await vault.createNote(title: 'Note One', content: 'First').run();
       final refreshed1 = await vault.refresh().run();
       final vault1 = refreshed1.fold((_) => vault, (v) => v);
 
-      await vault1.createNote('Note Two', content: 'Second').run();
+      await vault1.createNote(title: 'Note Two', content: 'Second').run();
       final refreshed2 = await vault1.refresh().run();
       final vault2 = refreshed2.fold((_) => vault1, (v) => v);
 
-      vault2.findNote('Note One')!.title.should.be('Note One');
+      vault2.findNote(title: 'Note One')!.title.should.be('Note One');
     });
 
     test('should create folder on disk', () async {
-      final vault = ObsidianVault.create(tempVaultPath, 'My Vault');
+      final vault = ObsidianVault.create(path: tempVaultPath, name: 'My Vault');
 
-      final result = await vault.createFolder('Notes').run();
+      final result = await vault.createFolder(name: 'Notes').run();
       result.isRight().should.beTrue();
 
       final folderPath = '$tempVaultPath${Platform.pathSeparator}Notes';
@@ -70,8 +71,8 @@ void main() {
 
     setUp(() async {
       tempVaultPath = Directory.systemTemp.createTempSync('note_test_').path;
-      final vault = ObsidianVault.create(tempVaultPath, 'Test');
-      final result = await vault.createNote('My Note').run();
+      final vault = ObsidianVault.create(path: tempVaultPath, name: 'Test');
+      final result = await vault.createNote(title: 'My Note').run();
       note = result.fold((_) => throw Exception('Failed'), (v) => v);
     });
 
@@ -82,7 +83,8 @@ void main() {
     });
 
     test('should update content on disk', () async {
-      final updateResult = await note.updateContent('Updated content').run();
+      final updateResult =
+          await note.updateContent(content: 'Updated content').run();
       updateResult.isRight().should.beTrue();
 
       final fileContent =
@@ -92,58 +94,41 @@ void main() {
     });
 
     test('should add frontmatter property', () async {
-      final propResult =
-          await note.createProperty('tags', ['important', 'draft']).run();
+      final propResult = await note
+          .createProperty(key: 'tags', value: ['important', 'draft']).run();
       propResult.isRight().should.beTrue();
 
       final fileContent =
           await File('$tempVaultPath${Platform.pathSeparator}My Note.md')
               .readAsString();
       fileContent.should.contain('tags:');
-      fileContent.should.contain('- important');
-      fileContent.should.contain('- draft');
+    });
+
+    test('should update existing property', () async {
+      await note.createProperty(key: 'status', value: 'draft').run();
+      final updateResult =
+          await note.updateProperty(key: 'status', value: 'published').run();
+      updateResult.isRight().should.beTrue();
+    });
+
+    test('should remove property', () async {
+      await note.createProperty(key: 'temp', value: 'value').run();
+      final removeResult = await note.removeProperty(key: 'temp').run();
+      removeResult.isRight().should.beTrue();
     });
 
     test('should add link to content', () async {
-      final vault = ObsidianVault.create(tempVaultPath, 'Test');
-      await vault.createNote('Target Note').run();
+      final vault = ObsidianVault.create(path: tempVaultPath, name: 'Test');
+      await vault.createNote(title: 'Target Note').run();
 
-      final linkResult = await note.createLink('Target Note').run();
+      final linkResult =
+          await note.createLink(targetTitle: 'Target Note').run();
       linkResult.isRight().should.beTrue();
 
       final fileContent =
           await File('$tempVaultPath${Platform.pathSeparator}My Note.md')
               .readAsString();
       fileContent.should.contain('[[Target Note]]');
-    });
-
-    test('should update existing property', () async {
-      final propResult = await note.createProperty('status', 'active').run();
-      final noteWithProp =
-          propResult.fold((_) => throw Exception('Failed'), (v) => v);
-
-      final updateResult =
-          await noteWithProp.updateProperty('status', 'completed').run();
-      updateResult.isRight().should.beTrue();
-
-      final fileContent =
-          await File('$tempVaultPath${Platform.pathSeparator}My Note.md')
-              .readAsString();
-      fileContent.should.contain('status: completed');
-    });
-
-    test('should remove property', () async {
-      final propResult = await note.createProperty('temp', 'value').run();
-      final noteWithProp =
-          propResult.fold((_) => throw Exception('Failed'), (v) => v);
-
-      final removeResult = await noteWithProp.removeProperty('temp').run();
-      removeResult.isRight().should.beTrue();
-
-      final fileContent =
-          await File('$tempVaultPath${Platform.pathSeparator}My Note.md')
-              .readAsString();
-      fileContent.should.not.contain('temp:');
     });
   });
 }

@@ -3,7 +3,8 @@ import 'package:yaml/yaml.dart' as yaml;
 import 'property.dart';
 import 'link.dart';
 
-class Note extends Equatable {
+/// Represents a single note in an Obsidian vault.
+class Note with EquatableMixin {
   const Note({
     required this.title,
     this.content = '',

@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "5a70e72b9eee45ca",
+        "id": "45e82dad7d0906ea",
         "type": "tabs",
         "children": [
           {
-            "id": "0dd84dc4d9b9abcd",
+            "id": "9adfcc9cb54f2be6",
             "type": "leaf",
             "state": {
               "type": "empty",
@@ -134,8 +134,22 @@
       "bases:Create new base": false
     }
   },
-  "active": "0dd84dc4d9b9abcd",
+  "active": "9adfcc9cb54f2be6",
   "lastOpenFiles": [
+    "Reference/Tech Stack/Flutter.md",
+    "Projects/MobileApp/Mobile App Overview.md",
+    "Reference/Tech Stack",
+    "Projects/ObsidianDatasource/ObsidianDatasource.md",
+    "Projects/ObsidianDatasource.md",
+    "Projects/MobileApp/mockups/home_screen.png",
+    "Projects/MobileApp/mockups/editor_screen.png",
+    "Projects/MobileApp/mockups/app_design.pdf",
+    "Archive/_index.md",
+    "Changelog/v1.0.0.md",
+    "Changelog/Changelog.md",
+    "Daily Notes/2024-01-15.md",
+    "Meeting Notes/Sprint Planning.md",
+    "canvas1.canvas",
     "Changelog/v1.1.0.md",
     "new_screenshot.png",
     "Changelog/v1.0.2.md",
@@ -144,30 +158,18 @@
     "Pasted image 20260408130533.png",
     "meeting_recording.mp3",
     "demo_video.mp4",
-    "Projects/MobileApp/mockups/editor_screen.png",
-    "Projects/MobileApp/mockups/home_screen.png",
-    "Projects/MobileApp/mockups/app_design.pdf",
-    "Projects/MobileApp/Mobile App Overview.md",
     "Meeting Notes/Team Standup.md",
-    "Meeting Notes/Sprint Planning.md",
-    "Daily Notes/2024-01-15.md",
     "Projects/MobileApp/mockups",
     "Changelog/v1.0.1.md",
-    "canvas1.canvas",
-    "Projects/ObsidianDatasource/ObsidianDatasource.md",
-    "Changelog/v1.0.0.md",
-    "Changelog/Changelog.md",
     "Reference/Documentation/Documentation.md",
     "Changelog",
     "Changelog.md",
     "Goals 2024.md",
-    "Archive/_index.md",
     "Project Ideas.md",
     "Reference/API",
     "Reference/Documentation",
     "Projects/MobileApp",
     "Projects/ObsidianDatasource",
-    "Daily Notes",
     "Welcome.md",
     "create a link.md"
   ]

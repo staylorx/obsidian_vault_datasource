@@ -7,75 +7,68 @@ void main() async {
   final tempDir = Directory.systemTemp.createTempSync('example_vault_').path;
   print('Creating vault at: $tempDir');
 
-  final vault = ObsidianVault.create(tempDir, 'My Project Vault');
+  final vault = ObsidianVault.create(path: tempDir, name: 'My Project Vault');
 
-  await vault.createFolder('projects').run();
-  await vault.createFolder('notes').run();
-  await vault.createFolder('archive').run();
+  await vault.createFolder(name: 'projects').run();
+  await vault.createFolder(name: 'notes').run();
+  await vault.createFolder(name: 'archive').run();
 
   await vault.createNote(
-    'projects/Project Phoenix',
+    title: 'projects/Project Phoenix',
     content: '''# Project Phoenix
 
 A new mobile application.
 
-## Goals
-- Launch MVP by Q2
-- 10k users
-
-## Related
-See [[notes/Meeting Notes]] for updates.
+See [[../Reference/Tech Stack/Flutter]] for details.
 ''',
   ).run();
 
   await vault.createNote(
-    'notes/Meeting Notes',
-    content: '''# Meeting Notes
+    title: 'notes/Meeting Notes 2024-01-15',
+    content: '''# Daily Standup
 
-## 2024-01-15
+## Attendees
+- Alex
+- Jordan
+- Sam
 
-- Discussed Phoenix timeline
-- Design review scheduled
+## Updates
+- Android app progressing nicely
+- Design review scheduled for Friday
 
-## 2024-01-10
-- Initial project kickoff
+## Action Items
+- [ ] Schedule design review
+- [ ] Review PRs
 ''',
   ).run();
 
   await vault.createNote(
-    'projects/Project Phoenix/Weekly Update',
-    content: '''# Weekly Update
+    title: 'notes/Feature List',
+    content: '''# Feature List
 
-## This Week
-- Completed wireframes
-- Started API design
+## Core Features
+- [ ] Note editing
+- [ ] Folder organization
+- [ ] Search
 
-## Next Week
-- Begin implementation
-- Review with team
-
-## Links
-- [[projects/Project Phoenix]] - Main project
-- [[notes/Meeting Notes]] - Meeting notes
+## Future
+- [ ] Tags
+- [ ] Graph view
+- [ ] Backlinks
 ''',
   ).run();
 
-  final refreshed = await vault.refresh().run();
-  final loadedVault = refreshed.fold((_) => vault, (v) => v);
+  final createdVault = await vault.refresh().run();
+  final finalVault =
+      createdVault.fold((f) => throw Exception(f.toString()), (v) => v);
 
-  print('\n=== Vault Contents ===');
-  print('Total notes: ${loadedVault.allNotes.length}');
-  for (final note in loadedVault.allNotes) {
+  print('Created ${finalVault.allNotes.length} notes:');
+  for (final note in finalVault.allNotes) {
     print('- ${note.title}');
-    print('  Links: ${note.links.map((l) => l.target).join(', ')}');
   }
 
-  final foundNote = loadedVault.findNote('Project Phoenix');
-  print('\n=== Found Note ===');
-  print('Title: ${foundNote?.title}');
-  print('Properties: ${foundNote?.properties.length}');
-  print('Links: ${foundNote?.links.map((l) => l.target).join(', ')}');
+  await vault.save().run();
+  print('\nSaved vault to $tempDir');
 
-  print('\n=== Cleanup ===');
-  print('Delete the vault directory when done: $tempDir');
+  await Directory(tempDir).delete(recursive: true);
 }

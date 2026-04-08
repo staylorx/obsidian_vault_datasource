@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
-class Attachment extends Equatable {
+/// Represents a file attachment in an Obsidian vault.
+class Attachment with EquatableMixin {
   const Attachment({
     required this.fileName,
     required this.path,

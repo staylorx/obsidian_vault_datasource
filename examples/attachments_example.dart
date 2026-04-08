@@ -7,7 +7,7 @@ void main() async {
   final vaultPath = 'examples/example_vault';
   print('Loading vault from: $vaultPath');
 
-  final vaultResult = await ObsidianVault.load(vaultPath).run();
+  final vaultResult = await ObsidianVault.load(path: vaultPath).run();
   final loadedVault = vaultResult.fold((failure) {
     print('Failed to load: $failure');
     exit(1);
@@ -38,8 +38,9 @@ void main() async {
   print('\n=== Reading Attachment Bytes ===');
   final firstAttachment = attachments.firstOrNull;
   if (firstAttachment != null) {
-    final bytesResult =
-        await loadedVault.readAttachmentBytes(firstAttachment.fileName).run();
+    final bytesResult = await loadedVault
+        .readAttachmentBytes(fileName: firstAttachment.fileName)
+        .run();
     final bytes = bytesResult.fold(
       (failure) {
         print('Failed to read bytes: $failure');
@@ -123,8 +124,9 @@ void main() async {
     0x82
   ];
 
-  final writeResult =
-      await loadedVault.writeAttachment('new_screenshot.png', newPng).run();
+  final writeResult = await loadedVault
+      .writeAttachment(fileName: 'new_screenshot.png', bytes: newPng)
+      .run();
 
   writeResult.fold(
     (failure) => print('Failed to write: $failure'),
@@ -148,7 +150,7 @@ void main() async {
 
   print('\n=== Deleting Attachment ===');
   final deleteResult =
-      await loadedVault.deleteAttachment('new_screenshot.png').run();
+      await loadedVault.deleteAttachment(fileName: 'new_screenshot.png').run();
 
   deleteResult.fold(
     (failure) => print('Failed to delete: $failure'),

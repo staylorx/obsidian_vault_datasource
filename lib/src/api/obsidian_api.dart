@@ -7,6 +7,10 @@ import '../data/repositories/note_repository.dart';
 import '../data/repositories/attachment_repository.dart';
 import '../core/usecases/vault_usecases.dart';
 
+/// Main API class for interacting with an Obsidian vault.
+///
+/// Use [ObsidianVault.create] to create a new vault, or [ObsidianVault.load] to load an existing one.
+/// All operations return [TaskEither] - call [TaskEither.run] to get a [Future].
 class ObsidianVault {
   final Vault _vault;
   final FileSystemAdapter _fileSystemAdapter;
@@ -31,7 +35,10 @@ class ObsidianVault {
     this._loadVault,
   ]) : _attachments = [];
 
-  factory ObsidianVault.create(String path, String name) {
+  /// Creates a new vault at the given path.
+  ///
+  /// [path] is the directory path. [name] is the vault name.
+  factory ObsidianVault.create({required String path, required String name}) {
     final fileSystemAdapter = FileSystemAdapter();
     final noteRepository = NoteRepository(fileSystemAdapter);
     final attachmentRepository = AttachmentRepository(fileSystemAdapter);
@@ -53,7 +60,13 @@ class ObsidianVault {
     );
   }
 
-  static TaskEither<Failure, ObsidianVault> load(String path) {
+  /// Loads an existing vault from disk.
+  ///
+  /// Returns a [TaskEither] that yields an [ObsidianVault] on success,
+  /// or a [Failure] on error. The vault contents are automatically loaded.
+  ///
+  /// [path] is the vault directory path.
+  static TaskEither<Failure, ObsidianVault> load({required String path}) {
     final fileSystemAdapter = FileSystemAdapter();
     final noteRepository = NoteRepository(fileSystemAdapter);
     final attachmentRepository = AttachmentRepository(fileSystemAdapter);
@@ -76,6 +89,9 @@ class ObsidianVault {
         ));
   }
 
+  /// Reloads the vault from disk.
+  ///
+  /// Use after external changes to refresh vault state.
   TaskEither<Failure, ObsidianVault> reload() {
     final loadVaultUseCase = _loadVault;
     if (loadVaultUseCase == null) {
@@ -98,16 +114,35 @@ class ObsidianVault {
     });
   }
 
+  /// The vault name.
   String get name => _vault.name;
+
+  /// The vault path on disk.
   String get path => _vault.path;
+
+  /// The underlying Vault entity.
   Vault get vault => _vault;
 
-  Note? findNote(String title) => _vault.findNote(title);
-  List<Note> searchNotes(String query) => _vault.searchNotes(query);
+  /// Finds a note by title.
+  ///
+  /// [title] is the note title to search for.
+  Note? findNote({required String title}) => _vault.findNote(title);
+
+  /// Searches notes by title or content.
+  ///
+  /// [query] is the search term.
+  List<Note> searchNotes({required String query}) => _vault.searchNotes(query);
+
+  /// All notes in the vault.
   List<Note> get allNotes => _vault.allNotes;
 
-  TaskEither<Failure, ObsidianNote> createNote(String title,
-      {String content = ''}) {
+  /// Creates a new note in the vault.
+  ///
+  /// [title] is the note title. [content] is optional initial content.
+  TaskEither<Failure, ObsidianNote> createNote({
+    required String title,
+    String content = '',
+  }) {
     return _createNote(_vault, title, content: content).map((note) {
       final updatedFolder = _vault.rootFolder.copyWith(
         notes: [..._vault.rootFolder.notes, note],
@@ -123,14 +158,19 @@ class ObsidianVault {
     });
   }
 
-  TaskEither<Failure, Unit> createFolder(String name) {
+  /// Creates a new folder in the vault.
+  ///
+  /// [name] is the folder name.
+  TaskEither<Failure, Unit> createFolder({required String name}) {
     return _createFolder(_vault, name);
   }
 
+  /// Saves all vault notes to disk.
   TaskEither<Failure, Unit> save() {
     return _saveVault(_vault);
   }
 
+  /// Refreshes the vault by re-reading from disk.
   TaskEither<Failure, ObsidianVault> refresh() {
     return TaskEither(() async {
       final rootFolderResult =
@@ -156,8 +196,10 @@ class ObsidianVault {
     });
   }
 
+  /// Returns the list of loaded attachments.
   List<Attachment> get attachments => _attachments;
 
+  /// Loads all attachments from the vault directory.
   TaskEither<Failure, List<Attachment>> loadAttachments() {
     return TaskEither(() async {
       final result =
@@ -172,7 +214,10 @@ class ObsidianVault {
     });
   }
 
-  TaskEither<Failure, Attachment> getAttachment(String fileName) {
+  /// Gets a specific attachment by filename.
+  ///
+  /// [fileName] is the name of the attachment.
+  TaskEither<Failure, Attachment> getAttachment({required String fileName}) {
     return TaskEither(() async {
       final attachmentPath =
           _fileSystemAdapter.joinPaths(_vault.path, fileName);
@@ -180,7 +225,13 @@ class ObsidianVault {
     });
   }
 
-  TaskEither<Failure, Unit> writeAttachment(String fileName, List<int> bytes) {
+  /// Writes an attachment to the vault.
+  ///
+  /// [fileName] is the target filename. [bytes] is the binary content.
+  TaskEither<Failure, Unit> writeAttachment({
+    required String fileName,
+    required List<int> bytes,
+  }) {
     return TaskEither(() async {
       final attachmentPath =
           _fileSystemAdapter.joinPaths(_vault.path, fileName);
@@ -204,7 +255,10 @@ class ObsidianVault {
     });
   }
 
-  TaskEither<Failure, Unit> deleteAttachment(String fileName) {
+  /// Deletes an attachment from the vault.
+  ///
+  /// [fileName] is the name of the attachment to delete.
+  TaskEither<Failure, Unit> deleteAttachment({required String fileName}) {
     return TaskEither(() async {
       final attachmentPath =
           _fileSystemAdapter.joinPaths(_vault.path, fileName);
@@ -220,7 +274,11 @@ class ObsidianVault {
     });
   }
 
-  TaskEither<Failure, List<int>> readAttachmentBytes(String fileName) {
+  /// Reads raw bytes from an attachment.
+  ///
+  /// [fileName] is the name of the attachment.
+  TaskEither<Failure, List<int>> readAttachmentBytes(
+      {required String fileName}) {
     return TaskEither(() async {
       final attachmentPath =
           _fileSystemAdapter.joinPaths(_vault.path, fileName);
@@ -246,6 +304,7 @@ class ObsidianVault {
   }
 }
 
+/// Represents a folder within an Obsidian vault with notes and subfolders.
 class ObsidianFolder {
   final Folder _folder;
   final Vault _vault;
@@ -261,11 +320,19 @@ class ObsidianFolder {
     this._createLink,
   );
 
+  /// The folder name.
   String get name => _folder.name;
+
+  /// Notes in this folder.
   List<Note> get notes => _folder.notes;
+
+  /// Subfolders in this folder.
   List<Folder> get subfolders => _folder.subfolders;
 
-  Note? findNote(String title) {
+  /// Finds a note by title in this folder or subfolders.
+  ///
+  /// [title] is the note title to search for.
+  Note? findNote({required String title}) {
     for (final note in _folder.notes) {
       if (note.title == title) return note;
     }
@@ -277,8 +344,13 @@ class ObsidianFolder {
     return null;
   }
 
-  TaskEither<Failure, ObsidianNote> createNote(String title,
-      {String content = ''}) {
+  /// Creates a note in this folder.
+  ///
+  /// [title] is the note title. [content] is optional initial content.
+  TaskEither<Failure, ObsidianNote> createNote({
+    required String title,
+    String content = '',
+  }) {
     final notePath = _fileSystemAdapter.joinPaths(_vault.path,
         '${_folder.name.isNotEmpty ? _folder.name + Platform.pathSeparator : ''}$title.md');
     final note = Note(title: title, content: content, path: notePath);
@@ -299,6 +371,7 @@ class ObsidianFolder {
   }
 }
 
+/// Represents a note within an Obsidian vault with fluent mutation API.
 class ObsidianNote {
   final Note _note;
   final Vault _vault;
@@ -314,26 +387,49 @@ class ObsidianNote {
     this._createLink,
   );
 
+  /// The note title.
   String get title => _note.title;
+
+  /// The note content.
   String get content => _note.content;
+
+  /// Frontmatter properties.
   List<Property> get properties => _note.properties;
+
+  /// Wiki-style links from this note.
   List<Link> get links => _note.links;
 
+  /// The underlying Note entity.
   Note get note => _note;
+
+  /// The vault this note belongs to.
   Vault get vault => _vault;
 
-  TaskEither<Failure, ObsidianNote> updateContent(String content) {
+  /// Updates the note content.
+  ///
+  /// [content] is the new content.
+  TaskEither<Failure, ObsidianNote> updateContent({required String content}) {
     final updatedNote = _note.copyWith(content: content);
     return _persistNote(updatedNote);
   }
 
-  TaskEither<Failure, ObsidianNote> updateTitle(String title) {
+  /// Updates the note title.
+  ///
+  /// [title] is the new title.
+  TaskEither<Failure, ObsidianNote> updateTitle({required String title}) {
     final updatedNote = _note.copyWith(title: title);
     return _persistNote(updatedNote);
   }
 
-  TaskEither<Failure, ObsidianNote> createProperty(String key, dynamic value,
-      {bool frontmatter = true}) {
+  /// Creates a new property on the note.
+  ///
+  /// [key] is the property key. [value] is the property value.
+  /// [frontmatter] if true, writes to YAML frontmatter.
+  TaskEither<Failure, ObsidianNote> createProperty({
+    required String key,
+    required dynamic value,
+    bool frontmatter = true,
+  }) {
     final property =
         Property(key: key, value: value, isFrontmatter: frontmatter);
     final updatedNote =
@@ -341,7 +437,13 @@ class ObsidianNote {
     return _persistNote(updatedNote);
   }
 
-  TaskEither<Failure, ObsidianNote> updateProperty(String key, dynamic value) {
+  /// Updates an existing property.
+  ///
+  /// [key] is the property to update. [value] is the new value.
+  TaskEither<Failure, ObsidianNote> updateProperty({
+    required String key,
+    required dynamic value,
+  }) {
     final updatedProperties = _note.properties.map((p) {
       if (p.key == key) return p.copyWith(value: value);
       return p;
@@ -350,15 +452,26 @@ class ObsidianNote {
     return _persistNote(updatedNote);
   }
 
-  TaskEither<Failure, ObsidianNote> removeProperty(String key) {
+  /// Removes a property from the note.
+  ///
+  /// [key] is the property key to remove.
+  TaskEither<Failure, ObsidianNote> removeProperty({required String key}) {
     final updatedProperties =
         _note.properties.where((p) => p.key != key).toList();
     final updatedNote = _note.copyWith(properties: updatedProperties);
     return _persistNote(updatedNote);
   }
 
-  TaskEither<Failure, ObsidianNote> createLink(String targetTitle,
-      {String? alias, bool createIfMissing = false}) {
+  /// Creates a wiki-style link to another note.
+  ///
+  /// [targetTitle] is the title of the note to link to.
+  /// [alias] is optional display text for the link.
+  /// [createIfMissing] creates target note if it doesn't exist.
+  TaskEither<Failure, ObsidianNote> createLink({
+    required String targetTitle,
+    String? alias,
+    bool createIfMissing = false,
+  }) {
     return _createLink(_note, targetTitle,
             alias: alias, createIfMissing: createIfMissing)
         .map((updatedNote) {

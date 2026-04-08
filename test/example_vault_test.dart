@@ -12,12 +12,12 @@ void main() {
       final exists = await adapter.directoryExists(examplePath);
       exists.fold((_) => false, (v) => v).should.beTrue();
 
-      final vaultResult = await ObsidianVault.load(examplePath).run();
+      final vaultResult = await ObsidianVault.load(path: examplePath).run();
       final loadedVault =
           vaultResult.fold((f) => throw Exception(f.toString()), (v) => v);
 
       loadedVault
-          .findNote('Welcome to Your Vault')!
+          .findNote(title: 'Welcome to Your Vault')!
           .title
           .should
           .be('Welcome to Your Vault');
@@ -26,7 +26,7 @@ void main() {
     test('should load notes from nested folders', () async {
       final examplePath = 'examples${Platform.pathSeparator}example_vault';
 
-      final vaultResult = await ObsidianVault.load(examplePath).run();
+      final vaultResult = await ObsidianVault.load(path: examplePath).run();
       final loadedVault =
           vaultResult.fold((f) => throw Exception(f.toString()), (v) => v);
 
@@ -40,11 +40,11 @@ void main() {
     test('should parse frontmatter properties from loaded notes', () async {
       final examplePath = 'examples${Platform.pathSeparator}example_vault';
 
-      final vaultResult = await ObsidianVault.load(examplePath).run();
+      final vaultResult = await ObsidianVault.load(path: examplePath).run();
       final loadedVault =
           vaultResult.fold((f) => throw Exception(f.toString()), (v) => v);
 
-      final welcomeNote = loadedVault.findNote('Welcome to Your Vault');
+      final welcomeNote = loadedVault.findNote(title: 'Welcome to Your Vault');
       welcomeNote!.properties.isNotEmpty.should.beTrue();
       welcomeNote.properties.any((p) => p.key == 'tags').should.beTrue();
     });
@@ -52,11 +52,11 @@ void main() {
     test('should parse links from loaded notes', () async {
       final examplePath = 'examples${Platform.pathSeparator}example_vault';
 
-      final vaultResult = await ObsidianVault.load(examplePath).run();
+      final vaultResult = await ObsidianVault.load(path: examplePath).run();
       final loadedVault =
           vaultResult.fold((f) => throw Exception(f.toString()), (v) => v);
 
-      final welcomeNote = loadedVault.findNote('Welcome to Your Vault');
+      final welcomeNote = loadedVault.findNote(title: 'Welcome to Your Vault');
       welcomeNote!.links.isNotEmpty.should.beTrue();
     });
   });
