@@ -93,6 +93,43 @@ class FileSystemAdapter {
     }
   }
 
+  Future<Either<Failure, List<int>>> readFileBytes(String path) async {
+    try {
+      final file = File(path);
+      if (!await file.exists()) {
+        return Left(FileNotFoundFailure(path));
+      }
+      return Right(await file.readAsBytes());
+    } catch (e) {
+      return Left(Failure('Failed to read file bytes: $e'));
+    }
+  }
+
+  Future<Either<Failure, Unit>> writeFileBytes(
+      String path, List<int> bytes) async {
+    try {
+      final file = File(path);
+      await file.parent.create(recursive: true);
+      await file.writeAsBytes(bytes);
+      return const Right(unit);
+    } catch (e) {
+      return Left(Failure('Failed to write file bytes: $e'));
+    }
+  }
+
+  Future<Either<Failure, int>> getFileSize(String path) async {
+    try {
+      final file = File(path);
+      if (!await file.exists()) {
+        return Left(FileNotFoundFailure(path));
+      }
+      final stat = await file.stat();
+      return Right(stat.size);
+    } catch (e) {
+      return Left(Failure('Failed to get file size: $e'));
+    }
+  }
+
   String joinPaths(String path1, String path2) {
     return '$path1${path1.endsWith(Platform.pathSeparator) ? '' : Platform.pathSeparator}$path2';
   }

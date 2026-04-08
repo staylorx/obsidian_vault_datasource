@@ -14,7 +14,7 @@ A Dart library for working with Obsidian vault datasources using functional prog
 
 ```yaml
 dependencies:
-  obsidian_vault_datasource: ^1.0.0
+  obsidian_vault_datasource: ^1.0.2
 ```
 
 ## Usage
@@ -71,3 +71,7 @@ dart test
 ## License
 
 MIT License - see [LICENSE](LICENSE) file.
+
+## Trademark Notice
+
+Flutter and Dart logos are trademarks of Google. The Flutter and Dart images included in this project or documentation are owned by their copyright holder, Google. This project is not affiliated with or endorsed by Google.

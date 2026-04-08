@@ -4,32 +4,37 @@ import '../domain/entities/entities.dart';
 import '../domain/failures.dart';
 import '../data/adapters/file_system_adapter.dart';
 import '../data/repositories/note_repository.dart';
+import '../data/repositories/attachment_repository.dart';
 import '../core/usecases/vault_usecases.dart';
 
 class ObsidianVault {
   final Vault _vault;
   final FileSystemAdapter _fileSystemAdapter;
   final NoteRepository _noteRepository;
+  final AttachmentRepository _attachmentRepository;
   final CreateNote _createNote;
   final CreateFolder _createFolder;
   final CreateLink _createLink;
   final SaveVault _saveVault;
   final LoadVault? _loadVault;
+  List<Attachment> _attachments;
 
   ObsidianVault._(
     this._vault,
     this._fileSystemAdapter,
     this._noteRepository,
+    this._attachmentRepository,
     this._createNote,
     this._createFolder,
     this._createLink,
     this._saveVault, [
     this._loadVault,
-  ]);
+  ]) : _attachments = [];
 
   factory ObsidianVault.create(String path, String name) {
     final fileSystemAdapter = FileSystemAdapter();
     final noteRepository = NoteRepository(fileSystemAdapter);
+    final attachmentRepository = AttachmentRepository(fileSystemAdapter);
     final createNote = CreateNote(fileSystemAdapter, noteRepository);
     final createFolder = CreateFolder(fileSystemAdapter);
     final createLink = CreateLink(noteRepository);
@@ -40,6 +45,7 @@ class ObsidianVault {
       vault,
       fileSystemAdapter,
       noteRepository,
+      attachmentRepository,
       createNote,
       createFolder,
       createLink,
@@ -50,6 +56,7 @@ class ObsidianVault {
   factory ObsidianVault.load(String path) {
     final fileSystemAdapter = FileSystemAdapter();
     final noteRepository = NoteRepository(fileSystemAdapter);
+    final attachmentRepository = AttachmentRepository(fileSystemAdapter);
     final createNote = CreateNote(fileSystemAdapter, noteRepository);
     final createFolder = CreateFolder(fileSystemAdapter);
     final createLink = CreateLink(noteRepository);
@@ -62,6 +69,7 @@ class ObsidianVault {
       vault,
       fileSystemAdapter,
       noteRepository,
+      attachmentRepository,
       createNote,
       createFolder,
       createLink,
@@ -84,6 +92,7 @@ class ObsidianVault {
         loadedVault,
         _fileSystemAdapter,
         _noteRepository,
+        _attachmentRepository,
         _createNote,
         _createFolder,
         _createLink,
@@ -139,6 +148,7 @@ class ObsidianVault {
             updatedVault,
             _fileSystemAdapter,
             _noteRepository,
+            _attachmentRepository,
             _createNote,
             _createFolder,
             _createLink,
@@ -148,6 +158,95 @@ class ObsidianVault {
         },
       );
     });
+  }
+
+  List<Attachment> get attachments => _attachments;
+
+  TaskEither<Failure, List<Attachment>> loadAttachments() {
+    return TaskEither(() async {
+      final result =
+          await _attachmentRepository.readAttachmentsFromDirectory(_vault.path);
+      return result.fold(
+        (failure) => Left(failure),
+        (attachments) {
+          _attachments = attachments;
+          return Right(attachments);
+        },
+      );
+    });
+  }
+
+  TaskEither<Failure, Attachment> getAttachment(String fileName) {
+    return TaskEither(() async {
+      final attachmentPath =
+          _fileSystemAdapter.joinPaths(_vault.path, fileName);
+      return _attachmentRepository.readAttachment(attachmentPath);
+    });
+  }
+
+  TaskEither<Failure, Unit> writeAttachment(String fileName, List<int> bytes) {
+    return TaskEither(() async {
+      final attachmentPath =
+          _fileSystemAdapter.joinPaths(_vault.path, fileName);
+      final result =
+          await _attachmentRepository.writeAttachment(attachmentPath, bytes);
+      return result.fold(
+        (failure) => Left(failure),
+        (_) async {
+          _attachments = [
+            ..._attachments,
+            Attachment(
+              fileName: fileName,
+              path: attachmentPath,
+              fileType: _getFileType(fileName),
+              size: bytes.length,
+            ),
+          ];
+          return const Right(unit);
+        },
+      );
+    });
+  }
+
+  TaskEither<Failure, Unit> deleteAttachment(String fileName) {
+    return TaskEither(() async {
+      final attachmentPath =
+          _fileSystemAdapter.joinPaths(_vault.path, fileName);
+      final result = await _fileSystemAdapter.deleteFile(attachmentPath);
+      return result.fold(
+        (failure) => Left(failure),
+        (_) {
+          _attachments =
+              _attachments.where((a) => a.fileName != fileName).toList();
+          return const Right(unit);
+        },
+      );
+    });
+  }
+
+  TaskEither<Failure, List<int>> readAttachmentBytes(String fileName) {
+    return TaskEither(() async {
+      final attachmentPath =
+          _fileSystemAdapter.joinPaths(_vault.path, fileName);
+      return _fileSystemAdapter.readFileBytes(attachmentPath);
+    });
+  }
+
+  String _getFileType(String fileName) {
+    final extension =
+        fileName.contains('.') ? fileName.split('.').last.toLowerCase() : '';
+    if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'bmp']
+        .contains(extension)) {
+      return 'image';
+    }
+    if (['mp4', 'mov', 'webm', 'avi', 'mkv'].contains(extension)) {
+      return 'video';
+    }
+    if (['mp3', 'wav', 'ogg', 'm4a', 'flac'].contains(extension)) {
+      return 'audio';
+    }
+    if (extension == 'pdf') return 'pdf';
+    return 'file';
   }
 }
 

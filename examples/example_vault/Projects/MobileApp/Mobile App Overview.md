@@ -30,6 +30,7 @@ A mobile companion to the Obsidian vault experience.
 ## Tech Stack
 
 - Flutter (see [[Reference/Tech Stack/Flutter]])
+	- ![[Pasted image 20260408130533.png]]
 - Dart (same as [[Projects/ObsidianDatasource]])
 
 ## Mockups

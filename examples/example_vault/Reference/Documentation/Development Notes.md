@@ -10,9 +10,8 @@ Internal notes for developing the Obsidian Vault Datasource.
 
 ## Current Work
 
-- v1.0.1 released on 2026-04-08
-- File watching support added
-- YAML parsing improved with full yaml package
+- v1.0.2 released on 2026-04-08
+- Attachment support added for images, videos, audio, PDFs
 
 ## Architecture Decisions
 
@@ -31,10 +30,16 @@ Internal notes for developing the Obsidian Vault Datasource.
 - Dart Streams for reactive change notifications
 - Can be started/stopped cyclically
 
+### Attachment Support
+- Binary file read/write via FileSystemAdapter
+- AttachmentRepository for CRUD operations
+- Automatic file type detection (image/video/audio/pdf)
+- ObsidianVault API: loadAttachments, getAttachment, writeAttachment, deleteAttachment
+
 ### File System Adapter Pattern
 - Abstraction over dart:io for testability
 - Can swap with in-memory implementation
-- Future: mock for unit tests
+- Binary operations added for attachments
 
 ## Testing Strategy
 
@@ -44,14 +49,13 @@ Internal notes for developing the Obsidian Vault Datasource.
 
 ## Known Limitations
 
-- No support for Obsidian attachments (images, etc.)
 - Canvas files are not supported (presentation-specific)
 
 ## Future Considerations
 
 - Consider adding support for canvas files
 - Could add more search capabilities
-- Consider adding attachment handling
+- Could add attachment embedding in notes
 
 ## Related
 
