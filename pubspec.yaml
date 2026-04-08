@@ -1,5 +1,5 @@
 name: obsidian_vault_datasource
-description: A sample command-line application.
+description: A Dart library for working with Obsidian vault datasources using functional programming.
 version: 1.0.0
 # repository: https://github.com/my_org/my_repo
 
@@ -11,6 +11,7 @@ dependencies:
   path: ^1.9.0
   equatable: ^2.0.7
   fpdart: ^1.2.0
+  yaml: ^3.1.2
 
 dev_dependencies:
   lints: ^6.0.0
