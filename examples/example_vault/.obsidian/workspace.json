@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "defdb8d3356f7b0d",
+        "id": "c7e3e7626b1bd319",
         "type": "tabs",
         "children": [
           {
-            "id": "c45af61faa70d8f2",
+            "id": "6e9fb84e50ff73a4",
             "type": "leaf",
             "state": {
               "type": "empty",
@@ -49,7 +49,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "tag:weekly",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -70,7 +70,8 @@
               "title": "Bookmarks"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -90,7 +91,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Welcome.md",
+                "file": "Meeting Notes/Team Standup.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -100,7 +101,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for Welcome"
+              "title": "Backlinks for Team Standup"
             }
           },
           {
@@ -109,63 +110,21 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Welcome.md",
+                "file": "Meeting Notes/Team Standup.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from Welcome"
-            }
-          },
-          {
-            "id": "1264b7bdd38b0021",
-            "type": "leaf",
-            "state": {
-              "type": "tag",
-              "state": {
-                "sortOrder": "frequency",
-                "useHierarchy": true,
-                "showSearch": false,
-                "searchQuery": ""
-              },
-              "icon": "lucide-tags",
-              "title": "Tags"
-            }
-          },
-          {
-            "id": "5e28441b323cf653",
-            "type": "leaf",
-            "state": {
-              "type": "all-properties",
-              "state": {
-                "sortOrder": "frequency",
-                "showSearch": false,
-                "searchQuery": ""
-              },
-              "icon": "lucide-archive",
-              "title": "All properties"
-            }
-          },
-          {
-            "id": "a6d949be7910e640",
-            "type": "leaf",
-            "state": {
-              "type": "outline",
-              "state": {
-                "followCursor": false,
-                "showSearch": false,
-                "searchQuery": ""
-              },
-              "icon": "lucide-list",
-              "title": "Outline"
+              "title": "Outgoing links from Team Standup"
             }
           }
         ],
-        "currentTab": 4
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -178,18 +137,19 @@
       "bases:Create new base": false
     }
   },
-  "active": "c45af61faa70d8f2",
+  "active": "807002638f93ef68",
   "lastOpenFiles": [
-    "Archive/_index.md",
     "Goals 2024.md",
+    "Meeting Notes/Team Standup.md",
+    "Meeting Notes/Sprint Planning.md",
+    "Archive/_index.md",
     "Daily Notes/2024-01-15.md",
-    "Reference/Documentation/Documentation.md",
     "Reference/API/Authentication.md",
+    "canvas1.canvas",
+    "Reference/Documentation/Documentation.md",
     "Projects/MobileApp/Mobile App Overview.md",
     "Projects/ObsidianDatasource/ObsidianDatasource.md",
     "Project Ideas.md",
-    "Meeting Notes/Sprint Planning.md",
-    "Meeting Notes/Team Standup.md",
     "Reference/API",
     "Reference/Documentation",
     "Projects/MobileApp",
@@ -200,7 +160,6 @@
     "Projects",
     "Meeting Notes",
     "Templates",
-    "canvas1.canvas",
     "Welcome.md",
     "create a link.md"
   ]
