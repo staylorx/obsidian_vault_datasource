@@ -7,10 +7,9 @@ void main() async {
   final vaultPath = 'examples/example_vault';
   print('Loading vault from: $vaultPath');
 
-  final vault = ObsidianVault.load(vaultPath);
-  final refreshed = await vault.refresh().run();
-  final loadedVault = refreshed.fold((failure) {
-    print('Failed to refresh: $failure');
+  final vaultResult = await ObsidianVault.load(vaultPath).run();
+  final loadedVault = vaultResult.fold((failure) {
+    print('Failed to load: $failure');
     exit(1);
   }, (v) => v);
 

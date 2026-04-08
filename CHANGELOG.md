@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.1.0 - Improved Load API (2026-04-08)
+
+### Breaking Changes
+
+- `ObsidianVault.load()` now returns `TaskEither<Failure, ObsidianVault>` instead of `ObsidianVault`
+- No longer requires manual `refresh()` call after `load()`
+
+### Before/After
+
+```dart
+// Before (clunky)
+final vault = ObsidianVault.load(vaultPath);
+final refreshed = await vault.refresh().run();
+final loadedVault = refreshed.fold((f) => ..., (v) => v);
+
+// After (clean)
+final vaultResult = await ObsidianVault.load(vaultPath).run();
+final loadedVault = vaultResult.fold((f) => ..., (v) => v);
+```
+
 ## 1.0.2 - Attachment Support (2026-04-08)
 
 ### Features

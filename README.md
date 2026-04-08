@@ -2,6 +2,42 @@
 
 A Dart library for working with Obsidian vault datasources using functional programming with fpdart.
 
+## API Style
+
+This library is built around [fpdart](https://pub.dev/packages/fpdart)'s `TaskEither` for type-safe error handling. All operations return `TaskEither<Failure, T>` - call `.run()` to get a `Future`:
+
+```dart
+// Each operation returns TaskEither
+final result = await vault.createNote('Hello').run();
+
+// Handle the Either
+result.fold(
+  (failure) => print('Error: $failure'),
+  (note) => print('Created: ${note.title}'),
+);
+```
+
+If you prefer plain Futures without the Either, you can add your own extension:
+
+```dart
+import 'package:fpdart/fpdart.dart';
+
+extension TaskEitherExt<R, L> on TaskEither<R, L> {
+  /// Executes the TaskEither and returns the value, throwing on failure
+  Future<R> toFuture() async {
+    return (await run()).getOrElse((l) => throw Exception(l.toString()));
+  }
+
+  /// Executes the TaskEither and returns the value, or a default
+  Future<R> toFutureOr(R defaultValue) async {
+    return (await run()).getOrElse((l) => defaultValue);
+  }
+}
+
+// Now you can use:
+final note = await vault.createNote('Hello').toFuture();
+```
+
 ## Features
 
 - Create and load Obsidian vaults
@@ -14,7 +50,7 @@ A Dart library for working with Obsidian vault datasources using functional prog
 
 ```yaml
 dependencies:
-  obsidian_vault_datasource: ^1.0.2
+  obsidian_vault_datasource: ^1.1.0
 ```
 
 ## Usage
@@ -23,16 +59,15 @@ dependencies:
 import 'package:obsidian_vault_datasource/obsidian_vault_datasource.dart';
 
 void main() async {
-  // Create a new vault
-  final vault = ObsidianVault.create('/path/to/vault', 'My Vault');
+  // Load an existing vault - returns TaskEither, auto-refreshes
+  final vaultResult = await ObsidianVault.load('/path/to/vault').run();
+  final vault = vaultResult.fold((f) => throw Exception(f), (v) => v);
+  
+  // Create a note
   await vault.createNote('Hello', content: 'World').run();
   
-  // Refresh to load from disk
-  final refreshed = await vault.refresh().run();
-  final loadedVault = refreshed.fold((_) => vault, (v) => v);
-  
   // Find your note
-  final note = loadedVault.findNote('Hello');
+  final note = vault.findNote('Hello');
   print(note?.title); // 'Hello'
 }
 ```

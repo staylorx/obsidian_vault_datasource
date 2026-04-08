@@ -53,7 +53,7 @@ class ObsidianVault {
     );
   }
 
-  factory ObsidianVault.load(String path) {
+  static TaskEither<Failure, ObsidianVault> load(String path) {
     final fileSystemAdapter = FileSystemAdapter();
     final noteRepository = NoteRepository(fileSystemAdapter);
     final attachmentRepository = AttachmentRepository(fileSystemAdapter);
@@ -63,21 +63,17 @@ class ObsidianVault {
     final saveVault = SaveVault(fileSystemAdapter, noteRepository);
     final loadVaultUseCase = LoadVault(fileSystemAdapter, noteRepository);
 
-    final vault =
-        Vault(name: path.split(Platform.pathSeparator).last, path: path);
-    final obsidianVault = ObsidianVault._(
-      vault,
-      fileSystemAdapter,
-      noteRepository,
-      attachmentRepository,
-      createNote,
-      createFolder,
-      createLink,
-      saveVault,
-      loadVaultUseCase,
-    );
-
-    return obsidianVault;
+    return loadVaultUseCase(path).map((loadedVault) => ObsidianVault._(
+          loadedVault,
+          fileSystemAdapter,
+          noteRepository,
+          attachmentRepository,
+          createNote,
+          createFolder,
+          createLink,
+          saveVault,
+          loadVaultUseCase,
+        ));
   }
 
   TaskEither<Failure, ObsidianVault> reload() {
