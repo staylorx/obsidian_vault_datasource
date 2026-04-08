@@ -71,6 +71,8 @@ test('create note', () async {
 
 ## See Also
 
+- [[Changelog/Changelog]] - Version history
+- [Development Notes](Reference/Documentation/Development Notes.md) - Internal dev docs
 - [[Reference/Tech Stack/Dart]]
 - [[Reference/Tech Stack/Flutter]]
 - [[Reference/External Services/AWS]]
