@@ -10,7 +10,9 @@ Internal notes for developing the Obsidian Vault Datasource.
 
 ## Current Work
 
-- v1.0.0 released on 2026-04-08
+- v1.0.1 released on 2026-04-08
+- File watching support added
+- YAML parsing improved with full yaml package
 
 ## Architecture Decisions
 
@@ -19,10 +21,15 @@ Internal notes for developing the Obsidian Vault Datasource.
 - Composable operations
 - Preferred over Future<Either> for readability
 
-### Why custom YAML parser?
-- Simpler than pulling in full yaml package
-- Covers 90% of Obsidian frontmatter use cases
-- Can upgrade to yaml package later if needed
+### Why yaml package?
+- Full YAML 1.1 support
+- Handles nested objects, arrays, booleans, dates
+- Replaces custom parser from v1.0.0
+
+### VaultWatcher
+- Uses `watcher` package for cross-platform file watching
+- Dart Streams for reactive change notifications
+- Can be started/stopped cyclically
 
 ### File System Adapter Pattern
 - Abstraction over dart:io for testability
@@ -37,15 +44,14 @@ Internal notes for developing the Obsidian Vault Datasource.
 
 ## Known Limitations
 
-- No file watching (manual refresh required)
 - No support for Obsidian attachments (images, etc.)
-- Basic frontmatter parsing (no complex YAML)
+- Canvas files are not supported (presentation-specific)
 
 ## Future Considerations
 
-- Consider adding file watching for live updates
-- Could add support for canvas files
-- Consider adding more sophisticated YAML parsing
+- Consider adding support for canvas files
+- Could add more search capabilities
+- Consider adding attachment handling
 
 ## Related
 

@@ -1,1 +1,9 @@
-{}
+{
+	"nodes":[
+		{"id":"844a7db02a244296","x":80,"y":-200,"width":400,"height":400,"type":"file","file":"Meeting Notes/Team Standup.md"},
+		{"id":"6b69af6aa52ff8cc","x":-640,"y":-320,"width":400,"height":400,"type":"file","file":"Meeting Notes/Sprint Planning.md"}
+	],
+	"edges":[
+		{"id":"78f2ee9f533f494d","fromNode":"6b69af6aa52ff8cc","fromSide":"bottom","toNode":"844a7db02a244296","toSide":"left"}
+	]
+}

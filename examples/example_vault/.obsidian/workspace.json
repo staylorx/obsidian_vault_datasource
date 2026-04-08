@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "c7e3e7626b1bd319",
+        "id": "cf3b75489f97954c",
         "type": "tabs",
         "children": [
           {
-            "id": "6e9fb84e50ff73a4",
+            "id": "56361eed3fc68863",
             "type": "leaf",
             "state": {
               "type": "empty",
@@ -70,8 +70,7 @@
               "title": "Bookmarks"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -135,22 +134,24 @@
       "bases:Create new base": false
     }
   },
-  "active": "6e9fb84e50ff73a4",
+  "active": "56361eed3fc68863",
   "lastOpenFiles": [
-    "Reference/Documentation/Development Notes.md",
+    "Changelog/v1.0.1.md",
+    "Meeting Notes/Sprint Planning.md",
+    "canvas1.canvas",
+    "Meeting Notes/Team Standup.md",
+    "Projects/ObsidianDatasource/ObsidianDatasource.md",
     "Changelog/v1.0.0.md",
+    "Changelog/Changelog.md",
+    "Reference/Documentation/Documentation.md",
+    "Reference/Documentation/Development Notes.md",
     "Changelog",
     "Changelog.md",
-    "Meeting Notes/Team Standup.md",
     "Goals 2024.md",
-    "Meeting Notes/Sprint Planning.md",
     "Archive/_index.md",
     "Daily Notes/2024-01-15.md",
     "Reference/API/Authentication.md",
-    "canvas1.canvas",
-    "Reference/Documentation/Documentation.md",
     "Projects/MobileApp/Mobile App Overview.md",
-    "Projects/ObsidianDatasource/ObsidianDatasource.md",
     "Project Ideas.md",
     "Reference/API",
     "Reference/Documentation",

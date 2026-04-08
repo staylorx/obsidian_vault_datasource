@@ -104,7 +104,10 @@ class ObsidianVault {
   TaskEither<Failure, ObsidianNote> createNote(String title,
       {String content = ''}) {
     return _createNote(_vault, title, content: content).map((note) {
-      final updatedVault = _vault.copyWith(notes: [..._vault.notes, note]);
+      final updatedFolder = _vault.rootFolder.copyWith(
+        notes: [..._vault.rootFolder.notes, note],
+      );
+      final updatedVault = _vault.copyWith(rootFolder: updatedFolder);
       return ObsidianNote._(
         note,
         updatedVault,
@@ -264,12 +267,14 @@ class ObsidianNote {
     return _createLink(_note, targetTitle,
             alias: alias, createIfMissing: createIfMissing)
         .map((updatedNote) {
+      final updatedNotes = _vault.rootFolder.notes
+          .map((n) => n.title == _note.title ? updatedNote : n)
+          .toList();
+      final updatedFolder = _vault.rootFolder.copyWith(notes: updatedNotes);
+      final updatedVault = _vault.copyWith(rootFolder: updatedFolder);
       return ObsidianNote._(
         updatedNote,
-        _vault.copyWith(
-            notes: _vault.notes
-                .map((n) => n.title == _note.title ? updatedNote : n)
-                .toList()),
+        updatedVault,
         _fileSystemAdapter,
         _noteRepository,
         _createLink,
@@ -282,12 +287,14 @@ class ObsidianNote {
       if (_note.path != null) {
         final result = await _noteRepository.writeNote(_note.path!, note);
         return result.map((_) {
+          final updatedNotes = _vault.rootFolder.notes
+              .map((n) => n.title == _note.title ? note : n)
+              .toList();
+          final updatedFolder = _vault.rootFolder.copyWith(notes: updatedNotes);
+          final updatedVault = _vault.copyWith(rootFolder: updatedFolder);
           return ObsidianNote._(
             note,
-            _vault.copyWith(
-                notes: _vault.notes
-                    .map((n) => n.title == _note.title ? note : n)
-                    .toList()),
+            updatedVault,
             _fileSystemAdapter,
             _noteRepository,
             _createLink,

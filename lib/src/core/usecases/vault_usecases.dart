@@ -65,8 +65,7 @@ class LoadVault {
               (rootFolder) => Right(Vault(
                 name: name,
                 path: path,
-                notes: notes,
-                rootFolder: rootFolder,
+                rootFolder: rootFolder.copyWith(notes: notes),
               )),
             ),
           );
@@ -84,16 +83,7 @@ class SaveVault {
 
   TaskEither<Failure, Unit> call(Vault vault) {
     return TaskEither(() async {
-      for (final note in vault.notes) {
-        final notePath =
-            _fileSystemAdapter.joinPaths(vault.path, '${note.title}.md');
-        final result = await _noteRepository.writeNote(notePath, note);
-        if (result.isLeft()) {
-          return result;
-        }
-      }
-
-      for (final note in vault.rootFolder.notes) {
+      for (final note in vault.allNotes) {
         final notePath =
             _fileSystemAdapter.joinPaths(vault.path, '${note.title}.md');
         final result = await _noteRepository.writeNote(notePath, note);

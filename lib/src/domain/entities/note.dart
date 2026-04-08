@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:yaml/yaml.dart' as yaml;
 import 'property.dart';
 import 'link.dart';
 
@@ -22,11 +23,13 @@ class Note extends Equatable {
 
     final frontmatterProps = properties.where((p) => p.isFrontmatter).toList();
     if (frontmatterProps.isNotEmpty) {
-      buffer.writeln('---');
+      final frontmatterMap = <String, dynamic>{};
       for (final prop in frontmatterProps) {
-        final valueStr = _formatPropertyValue(prop.value);
-        buffer.writeln('${prop.key}: $valueStr');
+        frontmatterMap[prop.key] = prop.value;
       }
+
+      buffer.writeln('---');
+      buffer.write(_dumpYaml(frontmatterMap));
       buffer.writeln('---');
       buffer.writeln();
     }
@@ -36,17 +39,66 @@ class Note extends Equatable {
     return buffer.toString();
   }
 
-  String _formatPropertyValue(dynamic value) {
+  static String _dumpYaml(dynamic value, {int indent = 0}) {
+    final buffer = StringBuffer();
+    final prefix = '  ' * indent;
+
+    if (value == null) {
+      buffer.writeln('${prefix}null');
+    } else if (value is bool) {
+      buffer.writeln('$prefix${value.toString()}');
+    } else if (value is num) {
+      buffer.writeln('$prefix${value.toString()}');
+    } else if (value is String) {
+      if (value.contains('\n') ||
+          value.contains(':') ||
+          value.contains('#') ||
+          value.startsWith('"') ||
+          value.startsWith("'")) {
+        final escaped = value.replaceAll('"', '\\"');
+        buffer.writeln('$prefix"$escaped"');
+      } else {
+        buffer.writeln('$prefix$value');
+      }
+    } else if (value is List) {
+      for (final item in value) {
+        if (item is Map || item is List) {
+          buffer.writeln('$prefix-');
+          buffer.write(_dumpYaml(item, indent: indent + 1));
+        } else {
+          buffer.writeln('$prefix- ${_formatYamlValue(item)}');
+        }
+      }
+    } else if (value is Map) {
+      for (final entry in value.entries) {
+        final key = entry.key.toString();
+        final val = entry.value;
+        if (val is Map || val is List) {
+          buffer.writeln('$prefix$key:');
+          buffer.write(_dumpYaml(val, indent: indent + 1));
+        } else {
+          buffer.writeln('$prefix$key: ${_formatYamlValue(val)}');
+        }
+      }
+    }
+
+    return buffer.toString();
+  }
+
+  static String _formatYamlValue(dynamic value) {
     if (value == null) return 'null';
+    if (value is bool) return value.toString();
+    if (value is num) return value.toString();
     if (value is String) {
-      if (value.contains('\n') || value.contains(':') || value.contains('#')) {
-        return '"${value.replaceAll('"', '\\"')}"';
+      if (value.contains('\n') ||
+          value.contains(':') ||
+          value.contains('#') ||
+          value.startsWith('"') ||
+          value.startsWith("'")) {
+        final escaped = value.replaceAll('"', '\\"');
+        return '"$escaped"';
       }
       return value;
-    }
-    if (value is List) {
-      final items = value.map((e) => _formatPropertyValue(e)).join(', ');
-      return '[$items]';
     }
     return value.toString();
   }
@@ -106,22 +158,41 @@ class Note extends Equatable {
     );
   }
 
-  static Map<String, dynamic> _parseYamlSimple(String yaml) {
+  static Map<String, dynamic> _parseYamlSimple(String yamlContent) {
+    try {
+      final parsed = yaml.loadYaml(yamlContent);
+      if (parsed is! yaml.YamlMap) return {};
+
+      return _convertYamlToMap(parsed);
+    } catch (e) {
+      return {};
+    }
+  }
+
+  static Map<String, dynamic> _convertYamlToMap(yaml.YamlMap yamlMap) {
     final result = <String, dynamic>{};
-    for (final line in yaml.split('\n')) {
-      final colonIndex = line.indexOf(':');
-      if (colonIndex > 0) {
-        final key = line.substring(0, colonIndex).trim();
-        var value = line.substring(colonIndex + 1).trim();
-        if (value.startsWith('"') && value.endsWith('"')) {
-          value = value.substring(1, value.length - 1);
-        } else if (value.startsWith("'") && value.endsWith("'")) {
-          value = value.substring(1, value.length - 1);
-        }
-        result[key] = value;
-      }
+    for (final entry in yamlMap.entries) {
+      final key = entry.key.toString();
+      final value = entry.value;
+      result[key] = _convertYamlValue(value);
     }
     return result;
+  }
+
+  static dynamic _convertYamlValue(dynamic value) {
+    if (value is yaml.YamlMap) {
+      return _convertYamlToMap(value);
+    } else if (value is yaml.YamlList) {
+      return value.map((e) => _convertYamlValue(e)).toList();
+    } else if (value is Map) {
+      return Map.fromEntries(
+        value.entries
+            .map((e) => MapEntry(e.key.toString(), _convertYamlValue(e.value))),
+      );
+    } else if (value is List) {
+      return value.map((e) => _convertYamlValue(e)).toList();
+    }
+    return value;
   }
 
   static List<Link> _extractLinks(String content) {

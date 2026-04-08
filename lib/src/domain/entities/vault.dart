@@ -6,13 +6,11 @@ class Vault extends Equatable {
   const Vault({
     required this.name,
     this.rootFolder = const Folder(name: ''),
-    this.notes = const [],
     required this.path,
   });
 
   final String name;
   final Folder rootFolder;
-  final List<Note> notes;
   final String path;
 
   List<Note> get allNotes => rootFolder.allNotes;
@@ -35,17 +33,15 @@ class Vault extends Equatable {
   Vault copyWith({
     String? name,
     Folder? rootFolder,
-    List<Note>? notes,
     String? path,
   }) {
     return Vault(
       name: name ?? this.name,
       rootFolder: rootFolder ?? this.rootFolder,
-      notes: notes ?? this.notes,
       path: path ?? this.path,
     );
   }
 
   @override
-  List<Object?> get props => [name, rootFolder, notes, path];
+  List<Object?> get props => [name, rootFolder, path];
 }

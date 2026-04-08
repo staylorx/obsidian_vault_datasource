@@ -20,7 +20,9 @@ void main() {
 
         final markdown = note.toMarkdown();
         markdown.should.contain('---');
-        markdown.should.contain('tags: [important, draft]');
+        markdown.should.contain('tags:');
+        markdown.should.contain('- important');
+        markdown.should.contain('- draft');
         markdown.should.contain('created: 2024-01-01');
         markdown.should.contain('Hello world');
       });
@@ -64,6 +66,95 @@ Some text with [[a link]] and another [[link target|display text]].
         note.links[0].target.should.be('a link');
         note.links[1].target.should.be('link target');
         note.links[1].alias.should.be('display text');
+      });
+
+      test('should parse complex YAML frontmatter with nested objects', () {
+        const markdown = '''---
+tags: [important, draft]
+status: active
+metadata:
+  author: John Doe
+  created: 2024-01-15
+  priority: high
+settings:
+  notify: true
+  retries: 3
+---
+
+# Complex Note
+
+Content here.
+''';
+        final note = Note.fromMarkdown(markdown);
+
+        note.properties.length.should.be(4);
+        note.properties.any((p) => p.key == 'tags').should.beTrue();
+        note.properties.any((p) => p.key == 'status').should.beTrue();
+
+        final metadataProp =
+            note.properties.firstWhere((p) => p.key == 'metadata');
+        final Map<String, dynamic> metadataValue =
+            metadataProp.value as Map<String, dynamic>;
+        (metadataValue['author'] as String).should.be('John Doe');
+
+        final settingsProp =
+            note.properties.firstWhere((p) => p.key == 'settings');
+        final Map<String, dynamic> settingsValue =
+            settingsProp.value as Map<String, dynamic>;
+        (settingsValue['notify'] as bool).should.be(true);
+        (settingsValue['retries'] as int).should.be(3);
+      });
+
+      test('should parse YAML with dates and booleans', () {
+        const markdown = '''---
+created: 2024-01-15
+updated: 2024-02-20
+published: true
+archived: false
+count: 42
+---
+
+# Date Note
+
+Test content.
+''';
+        final note = Note.fromMarkdown(markdown);
+
+        note.properties.length.should.be(5);
+        note.properties
+            .any((p) => p.key == 'published' && p.value == true)
+            .should
+            .beTrue();
+        note.properties
+            .any((p) => p.key == 'archived' && p.value == false)
+            .should
+            .beTrue();
+        note.properties
+            .any((p) => p.key == 'count' && p.value == 42)
+            .should
+            .beTrue();
+      });
+
+      test('should parse YAML with nested arrays', () {
+        const markdown = '''---
+matrix:
+  - [1, 2, 3]
+  - [4, 5, 6]
+tags:
+  - one
+  - two
+  - three
+---
+
+# Array Note
+
+Content.
+''';
+        final note = Note.fromMarkdown(markdown);
+
+        note.properties.any((p) => p.key == 'tags').should.beTrue();
+        final tagsProp = note.properties.firstWhere((p) => p.key == 'tags');
+        (tagsProp.value as List).length.should.be(3);
       });
     });
   });

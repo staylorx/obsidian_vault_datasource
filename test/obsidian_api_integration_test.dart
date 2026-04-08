@@ -99,7 +99,9 @@ void main() {
       final fileContent =
           await File('$tempVaultPath${Platform.pathSeparator}My Note.md')
               .readAsString();
-      fileContent.should.contain('tags: [important, draft]');
+      fileContent.should.contain('tags:');
+      fileContent.should.contain('- important');
+      fileContent.should.contain('- draft');
     });
 
     test('should add link to content', () async {
