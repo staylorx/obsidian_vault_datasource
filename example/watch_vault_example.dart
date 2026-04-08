@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:obsidian_vault_datasource/obsidian_vault_datasource.dart';
 
 void main() async {
-  final vaultPath = 'examples/example_vault';
+  final vaultPath = 'example/example_vault';
   print('Loading vault for watching: $vaultPath\n');
 
   final vaultResult = await ObsidianVault.load(path: vaultPath).run();

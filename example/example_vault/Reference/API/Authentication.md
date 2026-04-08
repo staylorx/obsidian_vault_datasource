@@ -26,7 +26,7 @@ Client -> Authorization Server -> Token -> API Calls
 
 ## Implementation
 
-See [[Reference/API/Authentication]] for code examples.
+See [[Reference/API/Authentication]] for code example.
 
 ## Related
 

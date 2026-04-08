@@ -86,15 +86,15 @@ void main() async {
 
 ## Examples
 
-See the `examples/` directory for complete examples:
+See the `example/` directory for complete example:
 
-- [Create Vault Example](examples/create_vault_example.dart) - Creates a vault with folders and notes with links
-- [Read Vault Example](examples/read_vault_example.dart) - Loads the example vault and prints all notes, properties, and links
+- [Create Vault Example](example/create_vault_example.dart) - Creates a vault with folders and notes with links
+- [Read Vault Example](example/read_vault_example.dart) - Loads the example vault and prints all notes, properties, and links
 
-Run examples:
+Run example:
 ```bash
-dart run examples/create_vault_example.dart
-dart run examples/read_vault_example.dart
+dart run example/create_vault_example.dart
+dart run example/read_vault_example.dart
 ```
 
 ## Testing

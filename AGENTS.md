@@ -8,7 +8,7 @@
 
 ## Testing
 
-Tests auto-clean up temp directories. The example vault in `examples/example_vault/` is used for integration tests. The `.obsidian/` folder is automatically ignored when loading vaults.
+Tests auto-clean up temp directories. The example vault in `example/example_vault/` is used for integration tests. The `.obsidian/` folder is automatically ignored when loading vaults.
 
 ### Test Conventions
 

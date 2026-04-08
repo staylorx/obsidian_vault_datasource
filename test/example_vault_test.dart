@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() {
   group('Given the example vault', () {
     test('should load and find notes', () async {
-      final examplePath = 'examples${Platform.pathSeparator}example_vault';
+      final examplePath = 'example${Platform.pathSeparator}example_vault';
 
       final adapter = FileSystemAdapter();
       final exists = await adapter.directoryExists(examplePath);
@@ -24,7 +24,7 @@ void main() {
     });
 
     test('should load notes from nested folders', () async {
-      final examplePath = 'examples${Platform.pathSeparator}example_vault';
+      final examplePath = 'example${Platform.pathSeparator}example_vault';
 
       final vaultResult = await ObsidianVault.load(path: examplePath).run();
       final loadedVault =
@@ -38,7 +38,7 @@ void main() {
     });
 
     test('should parse frontmatter properties from loaded notes', () async {
-      final examplePath = 'examples${Platform.pathSeparator}example_vault';
+      final examplePath = 'example${Platform.pathSeparator}example_vault';
 
       final vaultResult = await ObsidianVault.load(path: examplePath).run();
       final loadedVault =
@@ -50,7 +50,7 @@ void main() {
     });
 
     test('should parse links from loaded notes', () async {
-      final examplePath = 'examples${Platform.pathSeparator}example_vault';
+      final examplePath = 'example${Platform.pathSeparator}example_vault';
 
       final vaultResult = await ObsidianVault.load(path: examplePath).run();
       final loadedVault =
