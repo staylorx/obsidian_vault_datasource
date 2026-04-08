@@ -1,38 +1,42 @@
 import 'package:obsidian_vault_datasource/obsidian_vault_datasource.dart';
+import 'package:shouldly/shouldly.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a Note entity, when converting to Markdown', () {
-    test('should include frontmatter when properties exist', () {
-      final note = Note(
-        title: 'Test Note',
-        content: 'Hello world',
-        properties: [
-          Property(
-              key: 'tags', value: ['important', 'draft'], isFrontmatter: true),
-          Property(key: 'created', value: '2024-01-01', isFrontmatter: true),
-        ],
-      );
+  group('Given a Note entity', () {
+    group('when converting to Markdown', () {
+      test('should include frontmatter when properties exist', () {
+        final note = Note(
+          title: 'Test Note',
+          content: 'Hello world',
+          properties: [
+            Property(
+                key: 'tags',
+                value: ['important', 'draft'],
+                isFrontmatter: true),
+            Property(key: 'created', value: '2024-01-01', isFrontmatter: true),
+          ],
+        );
 
-      final markdown = note.toMarkdown();
-      expect(markdown.contains('---'), true);
-      expect(markdown.contains('tags: [important, draft]'), true);
-      expect(markdown.contains('created: 2024-01-01'), true);
-      expect(markdown.contains('Hello world'), true);
+        final markdown = note.toMarkdown();
+        markdown.should.contain('---');
+        markdown.should.contain('tags: [important, draft]');
+        markdown.should.contain('created: 2024-01-01');
+        markdown.should.contain('Hello world');
+      });
+
+      test('should not include frontmatter when no properties', () {
+        final note = Note(title: 'Simple Note', content: 'Just content');
+
+        final markdown = note.toMarkdown();
+        markdown.should.not.contain('---');
+        markdown.should.contain('Just content');
+      });
     });
 
-    test('should not include frontmatter when no properties', () {
-      final note = Note(title: 'Simple Note', content: 'Just content');
-
-      final markdown = note.toMarkdown();
-      expect(markdown.contains('---'), false);
-      expect(markdown.contains('Just content'), true);
-    });
-  });
-
-  group('Given a Note parsed from Markdown', () {
-    test('should extract frontmatter properties', () {
-      const markdown = '''---
+    group('when parsing from Markdown', () {
+      test('should extract frontmatter properties', () {
+        const markdown = '''---
 tags: [one, two]
 status: active
 ---
@@ -41,45 +45,49 @@ status: active
 
 Some content here.
 ''';
-      final note = Note.fromMarkdown(markdown);
+        final note = Note.fromMarkdown(markdown);
 
-      expect(note.title, 'My Note');
-      expect(note.content.contains('Some content here'), true);
-      expect(note.properties.length, 2);
-      expect(note.properties.any((p) => p.key == 'tags'), true);
-    });
+        note.title.should.be('My Note');
+        note.content.should.contain('Some content here');
+        note.properties.length.should.be(2);
+        note.properties.any((p) => p.key == 'tags').should.beTrue();
+      });
 
-    test('should extract wiki-style links', () {
-      const markdown = '''# Test Note
+      test('should extract wiki-style links', () {
+        const markdown = '''# Test Note
 
 Some text with [[a link]] and another [[link target|display text]].
 ''';
-      final note = Note.fromMarkdown(markdown);
+        final note = Note.fromMarkdown(markdown);
 
-      expect(note.links.length, 2);
-      expect(note.links[0].target, 'a link');
-      expect(note.links[1].target, 'link target');
-      expect(note.links[1].alias, 'display text');
+        note.links.length.should.be(2);
+        note.links[0].target.should.be('a link');
+        note.links[1].target.should.be('link target');
+        note.links[1].alias.should.be('display text');
+      });
     });
   });
 
   group('Given a Link entity', () {
     test('should render as wiki link without alias', () {
-      expect(Link(target: 'My Note').toMarkdown(), '[[My Note]]');
+      Link(target: 'My Note').toMarkdown().should.be('[[My Note]]');
     });
 
     test('should render as wiki link with alias', () {
-      expect(Link(target: 'My Note', alias: 'Display').toMarkdown(),
-          '[[My Note|Display]]');
+      Link(target: 'My Note', alias: 'Display')
+          .toMarkdown()
+          .should
+          .be('[[My Note|Display]]');
     });
 
     test('should parse wiki link without alias', () {
-      expect(Link.fromMarkdown('[[Test]]').target, 'Test');
+      Link.fromMarkdown('[[Test]]').target.should.be('Test');
     });
 
     test('should parse wiki link with alias', () {
-      expect(Link.fromMarkdown('[[Test|Alias]]').target, 'Test');
-      expect(Link.fromMarkdown('[[Test|Alias]]').alias, 'Alias');
+      final link = Link.fromMarkdown('[[Test|Alias]]');
+      link.target.should.be('Test');
+      link.alias.should.be('Alias');
     });
   });
 }

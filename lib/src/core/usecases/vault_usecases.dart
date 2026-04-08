@@ -7,9 +7,8 @@ import '../../data/repositories/note_repository.dart';
 
 class CreateVault {
   final FileSystemAdapter _fileSystemAdapter;
-  final NoteRepository _noteRepository;
 
-  CreateVault(this._fileSystemAdapter, this._noteRepository);
+  CreateVault(this._fileSystemAdapter);
 
   TaskEither<Failure, Vault> call(String path, String name) {
     return TaskEither(() async {
@@ -146,10 +145,9 @@ class CreateFolder {
 }
 
 class CreateLink {
-  final FileSystemAdapter _fileSystemAdapter;
   final NoteRepository _noteRepository;
 
-  CreateLink(this._fileSystemAdapter, this._noteRepository);
+  CreateLink(this._noteRepository);
 
   TaskEither<Failure, Note> call(Note sourceNote, String targetTitle,
       {String? alias, bool createIfMissing = false}) {

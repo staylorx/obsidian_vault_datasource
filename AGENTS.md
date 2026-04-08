@@ -10,11 +10,17 @@
 
 Tests auto-clean up temp directories. The example vault in `examples/example_vault/` is used for integration tests. The `.obsidian/` folder is automatically ignored when loading vaults.
 
-### Testing Hard Skills
+### Test Conventions
 
-* Always use mocktail package if mocking is used at all (prefer real tests here since that's what we're building).
-* Use a TDD-style Group-group-test naming that starts with "Given, when, then" in each of the names.
-* Prefer use of "should" over expect as much as possible.
+* Use `shouldly` package for assertions (`.should.be()`, `.should.contain()`, etc.)
+* Naming: `group-Given, group-when, test-then`
+  ```dart
+  group('Given a Note entity', () {
+    group('when converting to Markdown', () {
+      test('should include frontmatter when properties exist', () { ... });
+    });
+  });
+  ```
 
 ## API Design
 

@@ -1,4 +1,5 @@
 import 'package:obsidian_vault_datasource/obsidian_vault_datasource.dart';
+import 'package:shouldly/shouldly.dart';
 import 'package:test/test.dart';
 import 'dart:io';
 
@@ -20,10 +21,10 @@ void main() {
       final subDir = '$tempDir${Platform.pathSeparator}subfolder';
 
       final result = await adapter.createDirectory(subDir);
-      expect(result.isRight(), true);
+      result.isRight().should.beTrue();
 
       final exists = await adapter.directoryExists(subDir);
-      expect(exists.fold((_) => false, (v) => v), true);
+      exists.fold((_) => false, (v) => v).should.beTrue();
     });
 
     test('should write and read file', () async {
@@ -33,18 +34,18 @@ void main() {
       await adapter.writeFile(filePath, content);
       final result = await adapter.readFile(filePath);
 
-      expect(result.fold((_) => '', (v) => v), content);
+      result.fold((_) => '', (v) => v).should.be(content);
     });
 
     test('should return failure for non-existent file', () async {
       final result = await adapter
           .readFile('$tempDir${Platform.pathSeparator}nonexistent.txt');
-      expect(result.isLeft(), true);
+      result.isLeft().should.beTrue();
     });
 
     test('should join paths correctly', () {
       final result = adapter.joinPaths('/base', 'sub');
-      expect(result, '/base${Platform.pathSeparator}sub');
+      result.should.be('/base${Platform.pathSeparator}sub');
     });
 
     test('should delete directory recursively', () async {
@@ -52,10 +53,10 @@ void main() {
       await adapter.createDirectory(subDir);
 
       final result = await adapter.deleteDirectory(subDir);
-      expect(result.isRight(), true);
+      result.isRight().should.beTrue();
 
       final exists = await adapter.directoryExists(subDir);
-      expect(exists.fold((_) => true, (v) => v), false);
+      exists.fold((_) => true, (v) => v).should.beFalse();
     });
   });
 }

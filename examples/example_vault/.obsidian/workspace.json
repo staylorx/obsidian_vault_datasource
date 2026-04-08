@@ -91,7 +91,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Meeting Notes/Team Standup.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -101,7 +100,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for Team Standup"
+              "title": "Backlinks"
             }
           },
           {
@@ -110,12 +109,11 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Meeting Notes/Team Standup.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from Team Standup"
+              "title": "Outgoing links"
             }
           }
         ],
@@ -137,10 +135,10 @@
       "bases:Create new base": false
     }
   },
-  "active": "807002638f93ef68",
+  "active": "6e9fb84e50ff73a4",
   "lastOpenFiles": [
-    "Goals 2024.md",
     "Meeting Notes/Team Standup.md",
+    "Goals 2024.md",
     "Meeting Notes/Sprint Planning.md",
     "Archive/_index.md",
     "Daily Notes/2024-01-15.md",

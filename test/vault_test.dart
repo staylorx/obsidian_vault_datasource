@@ -1,4 +1,5 @@
 import 'package:obsidian_vault_datasource/obsidian_vault_datasource.dart';
+import 'package:shouldly/shouldly.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -16,8 +17,8 @@ void main() {
         ),
       );
 
-      expect(vault.findNote('Note1')?.title, 'Note1');
-      expect(vault.findNote('Note3'), null);
+      vault.findNote('Note1')!.title.should.be('Note1');
+      vault.findNote('Note3').should.beNull();
     });
 
     test('should find note in nested folders', () {
@@ -36,7 +37,7 @@ void main() {
         ),
       );
 
-      expect(vault.findNote('Nested Note')?.title, 'Nested Note');
+      vault.findNote('Nested Note')!.title.should.be('Nested Note');
     });
 
     test('should search notes by title and content', () {
@@ -55,8 +56,8 @@ void main() {
       );
 
       final results = vault.searchNotes('dart');
-      expect(results.length, 1);
-      expect(results[0].title, 'Dart Guide');
+      results.length.should.be(1);
+      results[0].title.should.be('Dart Guide');
     });
 
     test('should return all notes including nested', () {
@@ -75,9 +76,9 @@ void main() {
         ),
       );
 
-      expect(vault.allNotes.length, 2);
-      expect(vault.allNotes.map((n) => n.title), contains('Root Note'));
-      expect(vault.allNotes.map((n) => n.title), contains('Sub Note'));
+      vault.allNotes.length.should.be(2);
+      vault.allNotes.map((n) => n.title).should.contain('Root Note');
+      vault.allNotes.map((n) => n.title).should.contain('Sub Note');
     });
   });
 
@@ -100,7 +101,7 @@ void main() {
         ],
       );
 
-      expect(folder.allNotes.length, 4);
+      folder.allNotes.length.should.be(4);
     });
   });
 }

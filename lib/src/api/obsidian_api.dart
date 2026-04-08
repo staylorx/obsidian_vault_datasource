@@ -32,7 +32,7 @@ class ObsidianVault {
     final noteRepository = NoteRepository(fileSystemAdapter);
     final createNote = CreateNote(fileSystemAdapter, noteRepository);
     final createFolder = CreateFolder(fileSystemAdapter);
-    final createLink = CreateLink(fileSystemAdapter, noteRepository);
+    final createLink = CreateLink(noteRepository);
     final saveVault = SaveVault(fileSystemAdapter, noteRepository);
 
     final vault = Vault(name: name, path: path);
@@ -52,7 +52,7 @@ class ObsidianVault {
     final noteRepository = NoteRepository(fileSystemAdapter);
     final createNote = CreateNote(fileSystemAdapter, noteRepository);
     final createFolder = CreateFolder(fileSystemAdapter);
-    final createLink = CreateLink(fileSystemAdapter, noteRepository);
+    final createLink = CreateLink(noteRepository);
     final saveVault = SaveVault(fileSystemAdapter, noteRepository);
     final loadVaultUseCase = LoadVault(fileSystemAdapter, noteRepository);
 
@@ -153,7 +153,6 @@ class ObsidianFolder {
   final Vault _vault;
   final FileSystemAdapter _fileSystemAdapter;
   final NoteRepository _noteRepository;
-  final CreateNote _createNote;
   final CreateLink _createLink;
 
   ObsidianFolder._(
@@ -161,7 +160,6 @@ class ObsidianFolder {
     this._vault,
     this._fileSystemAdapter,
     this._noteRepository,
-    this._createNote,
     this._createLink,
   );
 

@@ -1,4 +1,5 @@
 import 'package:obsidian_vault_datasource/obsidian_vault_datasource.dart';
+import 'package:shouldly/shouldly.dart';
 import 'package:test/test.dart';
 import 'dart:io';
 
@@ -21,7 +22,7 @@ void main() {
 
       final adapter = FileSystemAdapter();
       final exists = await adapter.directoryExists(tempVaultPath);
-      expect(exists.fold((_) => false, (v) => v), true);
+      exists.fold((_) => false, (v) => v).should.beTrue();
     });
 
     test('should create note file on disk', () async {
@@ -30,12 +31,12 @@ void main() {
       final result =
           await vault.createNote('Test Note', content: 'Hello content').run();
 
-      expect(result.isRight(), true);
+      result.isRight().should.beTrue();
       final notePath = '$tempVaultPath${Platform.pathSeparator}Test Note.md';
-      expect(File(notePath).existsSync(), true);
+      File(notePath).existsSync().should.beTrue();
 
       final content = await File(notePath).readAsString();
-      expect(content.contains('Hello content'), true);
+      content.should.contain('Hello content');
     });
 
     test('should find note after refresh', () async {
@@ -49,18 +50,17 @@ void main() {
       final refreshed2 = await vault1.refresh().run();
       final vault2 = refreshed2.fold((_) => vault1, (v) => v);
 
-      final found = vault2.findNote('Note One');
-      expect(found?.title, 'Note One');
+      vault2.findNote('Note One')!.title.should.be('Note One');
     });
 
     test('should create folder on disk', () async {
       final vault = ObsidianVault.create(tempVaultPath, 'My Vault');
 
       final result = await vault.createFolder('Notes').run();
-      expect(result.isRight(), true);
+      result.isRight().should.beTrue();
 
       final folderPath = '$tempVaultPath${Platform.pathSeparator}Notes';
-      expect(Directory(folderPath).existsSync(), true);
+      Directory(folderPath).existsSync().should.beTrue();
     });
   });
 
@@ -83,23 +83,23 @@ void main() {
 
     test('should update content on disk', () async {
       final updateResult = await note.updateContent('Updated content').run();
-      expect(updateResult.isRight(), true);
+      updateResult.isRight().should.beTrue();
 
       final fileContent =
           await File('$tempVaultPath${Platform.pathSeparator}My Note.md')
               .readAsString();
-      expect(fileContent.contains('Updated content'), true);
+      fileContent.should.contain('Updated content');
     });
 
     test('should add frontmatter property', () async {
       final propResult =
           await note.createProperty('tags', ['important', 'draft']).run();
-      expect(propResult.isRight(), true);
+      propResult.isRight().should.beTrue();
 
       final fileContent =
           await File('$tempVaultPath${Platform.pathSeparator}My Note.md')
               .readAsString();
-      expect(fileContent.contains('tags: [important, draft]'), true);
+      fileContent.should.contain('tags: [important, draft]');
     });
 
     test('should add link to content', () async {
@@ -107,12 +107,12 @@ void main() {
       await vault.createNote('Target Note').run();
 
       final linkResult = await note.createLink('Target Note').run();
-      expect(linkResult.isRight(), true);
+      linkResult.isRight().should.beTrue();
 
       final fileContent =
           await File('$tempVaultPath${Platform.pathSeparator}My Note.md')
               .readAsString();
-      expect(fileContent.contains('[[Target Note]]'), true);
+      fileContent.should.contain('[[Target Note]]');
     });
 
     test('should update existing property', () async {
@@ -122,12 +122,12 @@ void main() {
 
       final updateResult =
           await noteWithProp.updateProperty('status', 'completed').run();
-      expect(updateResult.isRight(), true);
+      updateResult.isRight().should.beTrue();
 
       final fileContent =
           await File('$tempVaultPath${Platform.pathSeparator}My Note.md')
               .readAsString();
-      expect(fileContent.contains('status: completed'), true);
+      fileContent.should.contain('status: completed');
     });
 
     test('should remove property', () async {
@@ -136,23 +136,12 @@ void main() {
           propResult.fold((_) => throw Exception('Failed'), (v) => v);
 
       final removeResult = await noteWithProp.removeProperty('temp').run();
-      expect(removeResult.isRight(), true);
+      removeResult.isRight().should.beTrue();
 
       final fileContent =
           await File('$tempVaultPath${Platform.pathSeparator}My Note.md')
               .readAsString();
-      expect(fileContent.contains('temp:'), false);
-    });
-
-    test('should remove property', () async {
-      await note.createProperty('temp', 'value').run();
-      final removeResult = await note.removeProperty('temp').run();
-      expect(removeResult.isRight(), true);
-
-      final fileContent =
-          await File('$tempVaultPath${Platform.pathSeparator}My Note.md')
-              .readAsString();
-      expect(fileContent.contains('temp:'), false);
+      fileContent.should.not.contain('temp:');
     });
   });
 }
