@@ -128,11 +128,19 @@ class Note with EquatableMixin {
 
     final content = lines.sublist(contentStartIndex).join('\n').trim();
 
-    final titleMatch =
-        RegExp(r'^#\s+(.+)$', multiLine: true).firstMatch(content);
     String title;
-    if (titleMatch != null) {
-      title = titleMatch.group(1) ?? 'Untitled';
+    // Only search for title if content looks like it might have one (starts with #)
+    if (content.startsWith('#')) {
+      final titleMatch =
+          RegExp(r'^#\s+(.+)$', multiLine: true).firstMatch(content);
+      if (titleMatch != null) {
+        title = titleMatch.group(1) ?? 'Untitled';
+      } else if (path != null) {
+        final fileName = path.split(RegExp(r'[/\\]')).last;
+        title = fileName.replaceAll(RegExp(r'\.md$'), '');
+      } else {
+        title = 'Untitled';
+      }
     } else if (path != null) {
       final fileName = path.split(RegExp(r'[/\\]')).last;
       title = fileName.replaceAll(RegExp(r'\.md$'), '');
@@ -197,6 +205,10 @@ class Note with EquatableMixin {
   }
 
   static List<Link> _extractLinks(String content) {
+    // Early return if content doesn't contain [[ which would indicate potential links
+    if (!content.contains('[[')) {
+      return [];
+    }
     final linkRegex = RegExp(r'\[\[([^|\]]+)(?:\|([^\]]+))?\]\]');
     return linkRegex
         .allMatches(content)

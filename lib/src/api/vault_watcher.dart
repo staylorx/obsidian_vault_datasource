@@ -53,7 +53,7 @@ class VaultWatcher {
 
         return const Right(unit);
       } catch (e) {
-        return Left(Failure('Failed to start watching: $e'));
+        return Left(WatchFailure('$e'));
       }
     });
   }

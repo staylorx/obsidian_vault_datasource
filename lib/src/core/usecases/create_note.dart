@@ -17,9 +17,9 @@ class CreateNote {
   TaskEither<Failure, Note> call({
     required Vault vault,
     required String title,
+    required String path,
     String content = '',
     bool overwrite = false,
-    String? path,
   }) {
     return _validateMarkdown(content: content).flatMap(
       (_) => TaskEither(() async {
@@ -29,18 +29,16 @@ class CreateNote {
         }
 
         final note = Note(title: title, content: content);
-        final notePath =
-            path ?? _fileSystemAdapter.joinPaths(vault.path, '$title.md');
 
-        final existsResult = await _fileSystemAdapter.fileExists(notePath);
+        final existsResult = await _fileSystemAdapter.fileExists(path);
         final fileExists = existsResult.fold((_) => false, (e) => e);
         if (fileExists && !overwrite) {
-          return Left(FileExistsFailure(notePath));
+          return Left(FileExistsFailure(path));
         }
 
-        final result = await _noteRepository.writeNote(notePath, note);
+        final result = await _noteRepository.writeNote(path, note);
 
-        return result.map((_) => note.copyWith(path: notePath));
+        return result.map((_) => note.copyWith(path: path));
       }),
     );
   }

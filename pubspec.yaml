@@ -1,6 +1,6 @@
 name: obsidian_vault_datasource
 description: A Dart library for working with Obsidian vault datasources using functional programming with fpdart.
-version: 1.2.0
+version: 1.2.1
 homepage: https://github.com/staylorx/obsidian_vault_datasource
 repository: https://github.com/staylorx/obsidian_vault_datasource
 issue_tracker: https://github.com/staylorx/obsidian_vault_datasource/issues

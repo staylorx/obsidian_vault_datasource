@@ -9,14 +9,14 @@ class UpdateNote {
 
   final NoteRepository _noteRepository;
 
-  TaskEither<Failure, Note> call({required Note ref}) {
+  TaskEither<Failure, Note> call({required Note note}) {
     return TaskEither(() async {
-      if (ref.path == null) {
-        return Left(const Failure('Note has no path'));
+      if (note.path == null) {
+        return Left(const NoteHasNoPathFailure());
       }
 
-      final result = await _noteRepository.writeNote(ref.path!, ref);
-      return result.map((_) => ref);
+      final result = await _noteRepository.writeNote(note.path!, note);
+      return result.map((_) => note);
     });
   }
 }

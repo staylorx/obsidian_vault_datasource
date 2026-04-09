@@ -95,8 +95,7 @@ class ObsidianVault {
   TaskEither<Failure, ObsidianVault> reload() {
     final loadVaultUseCase = _loadVault;
     if (loadVaultUseCase == null) {
-      return TaskEither(() async =>
-          Left(const Failure('Cannot reload: vault was not loaded')));
+      return TaskEither(() async => Left(const CannotReloadFailure()));
     }
 
     return loadVaultUseCase(path: _vault.path).map((loadedVault) {
@@ -144,9 +143,16 @@ class ObsidianVault {
     required String title,
     String content = '',
     bool overwrite = false,
+    String? path,
   }) {
+    final notePath =
+        path ?? _fileSystemAdapter.joinPaths(_vault.path, '$title.md');
     return _createNote(
-            vault: _vault, title: title, content: content, overwrite: overwrite)
+            vault: _vault,
+            title: title,
+            content: content,
+            overwrite: overwrite,
+            path: notePath)
         .map((note) {
       final updatedFolder = _vault.rootFolder.copyWith(
         notes: [
@@ -363,7 +369,7 @@ class ObsidianFolder {
     String content = '',
     bool overwrite = false,
   }) {
-    final notePath = _fileSystemAdapter.joinPaths(_vault.path,
+    final path = _fileSystemAdapter.joinPaths(_vault.path,
         '${_folder.name.isNotEmpty ? _folder.name + Platform.pathSeparator : ''}$title.md');
 
     return _createNote(
@@ -371,7 +377,7 @@ class ObsidianFolder {
             title: title,
             content: content,
             overwrite: overwrite,
-            path: notePath)
+            path: path)
         .map((note) {
       final updatedFolder = _folder.copyWith(
           notes: [..._folder.notes.where((n) => n.title != title), note]);

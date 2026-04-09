@@ -15,7 +15,7 @@ class FileSystemAdapter {
       final entities = await dir.list().toList();
       return Right(entities.map((e) => e.path).toList());
     } catch (e) {
-      return Left(Failure('Failed to list directory: $e'));
+      return Left(ListDirectoryFailure('$e'));
     }
   }
 
@@ -24,7 +24,7 @@ class FileSystemAdapter {
       final file = File(path);
       return Right(await file.exists());
     } catch (e) {
-      return Left(Failure('Failed to check file: $e'));
+      return Left(CheckFileFailure('$e'));
     }
   }
 
@@ -33,7 +33,7 @@ class FileSystemAdapter {
       final dir = Directory(path);
       return Right(await dir.exists());
     } catch (e) {
-      return Left(Failure('Failed to check directory: $e'));
+      return Left(CheckDirectoryFailure('$e'));
     }
   }
 
@@ -45,7 +45,7 @@ class FileSystemAdapter {
       }
       return Right(await file.readAsString());
     } catch (e) {
-      return Left(Failure('Failed to read file: $e'));
+      return Left(ReadFileFailure('$e'));
     }
   }
 
@@ -56,7 +56,7 @@ class FileSystemAdapter {
       await file.writeAsString(content);
       return const Right(unit);
     } catch (e) {
-      return Left(Failure('Failed to write file: $e'));
+      return Left(WriteFileFailure('$e'));
     }
   }
 
@@ -68,7 +68,7 @@ class FileSystemAdapter {
       }
       return const Right(unit);
     } catch (e) {
-      return Left(Failure('Failed to delete file: $e'));
+      return Left(DeleteFileFailure('$e'));
     }
   }
 
@@ -78,7 +78,7 @@ class FileSystemAdapter {
       await dir.create(recursive: true);
       return const Right(unit);
     } catch (e) {
-      return Left(Failure('Failed to create directory: $e'));
+      return Left(CreateDirectoryFailure('$e'));
     }
   }
 
@@ -90,7 +90,7 @@ class FileSystemAdapter {
       }
       return const Right(unit);
     } catch (e) {
-      return Left(Failure('Failed to delete directory: $e'));
+      return Left(DeleteDirectoryFailure('$e'));
     }
   }
 
@@ -102,7 +102,7 @@ class FileSystemAdapter {
       }
       return Right(await file.readAsBytes());
     } catch (e) {
-      return Left(Failure('Failed to read file bytes: $e'));
+      return Left(ReadFileBytesFailure('$e'));
     }
   }
 
@@ -114,7 +114,7 @@ class FileSystemAdapter {
       await file.writeAsBytes(bytes);
       return const Right(unit);
     } catch (e) {
-      return Left(Failure('Failed to write file bytes: $e'));
+      return Left(WriteFileBytesFailure('$e'));
     }
   }
 
@@ -127,7 +127,7 @@ class FileSystemAdapter {
       final stat = await file.stat();
       return Right(stat.size);
     } catch (e) {
-      return Left(Failure('Failed to get file size: $e'));
+      return Left(GetFileSizeFailure('$e'));
     }
   }
 

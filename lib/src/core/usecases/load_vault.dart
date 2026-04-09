@@ -17,10 +17,10 @@ class LoadVault {
       final existsResult = await _fileSystemAdapter.directoryExists(path);
 
       return existsResult.fold(
-        (failure) => Left(failure),
+        (failure) => Left<Failure, Vault>(failure),
         (exists) async {
           if (!exists) {
-            return Left(DirectoryNotFoundFailure(path));
+            return Left<Failure, Vault>(DirectoryNotFoundFailure(path));
           }
 
           final name = path.split(Platform.pathSeparator).last;
@@ -30,10 +30,10 @@ class LoadVault {
           final rootFolderResult = await _noteRepository.loadFolder(path, '');
 
           return notesResult.fold(
-            (failure) => Left(failure),
+            (failure) => Left<Failure, Vault>(failure),
             (notes) => rootFolderResult.fold(
-              (failure) => Left(failure),
-              (rootFolder) => Right(Vault(
+              (failure) => Left<Failure, Vault>(failure),
+              (rootFolder) => Right<Failure, Vault>(Vault(
                 name: name,
                 path: path,
                 rootFolder: rootFolder.copyWith(notes: notes),
@@ -41,7 +41,7 @@ class LoadVault {
             ),
           );
         },
-      );
+      ) as Future<Either<Failure, Vault>>;
     });
   }
 }

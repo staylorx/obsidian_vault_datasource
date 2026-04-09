@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.2.1 - Performance Fixes (2026-04-09)
+
+### Bug Fixes
+
+- Fixed `dart test` hanging on benchmark tests with large files
+- Added early return checks to avoid regex catastrophic backtracking on large strings
+- Added `contains('[[')` check before running link extraction regex
+- Added `startsWith('#')` check before running title extraction regex
+- Fixed improper async/fold patterns in load vault and note repository
+
+### Test Changes
+
+- Replaced 1MB note test with 25KB version that completes in ~9 seconds
+- All 55 tests now pass
+
 ## 1.2.0 - Use Cases & Validation (2026-04-08)
 
 ### Breaking Changes

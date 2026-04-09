@@ -25,23 +25,23 @@ class NoteRepository {
       String dirPath) async {
     final listResult = await _fileSystemAdapter.listDirectory(dirPath);
 
-    return listResult.fold(
-      (failure) => Left(failure),
-      (paths) async {
-        final notes = <Note>[];
-        final markdownFiles = paths.where((p) => p.endsWith('.md'));
+    if (listResult.isLeft()) {
+      return listResult.map((paths) => []);
+    }
 
-        for (final filePath in markdownFiles) {
-          final noteResult = await readNote(filePath);
-          noteResult.fold(
-            (failure) => null,
-            (note) => notes.add(note),
-          );
-        }
+    final paths = listResult.getOrElse((_) => []);
+    final notes = <Note>[];
+    final markdownFiles = paths.where((p) => p.endsWith('.md'));
 
-        return Right(notes);
-      },
-    );
+    for (final filePath in markdownFiles) {
+      final noteResult = await readNote(filePath);
+      noteResult.fold(
+        (failure) => null,
+        (note) => notes.add(note),
+      );
+    }
+
+    return Right(notes);
   }
 
   Future<Either<Failure, Map<String, Folder>>> readFoldersFromDirectory(
@@ -50,24 +50,24 @@ class NoteRepository {
   ) async {
     final listResult = await _fileSystemAdapter.listDirectory(dirPath);
 
-    return listResult.fold(
-      (failure) => Left(failure),
-      (paths) async {
-        final folders = <String, Folder>{};
-        final directories = paths.where((p) => Directory(p).existsSync());
+    if (listResult.isLeft()) {
+      return listResult.map((paths) => {});
+    }
 
-        for (final dirPath in directories) {
-          final name = _fileSystemAdapter.getDirectoryName(dirPath);
-          final folderResult = await loadFolder(dirPath, name);
-          folderResult.fold(
-            (failure) => null,
-            (folder) => folders[name] = folder,
-          );
-        }
+    final paths = listResult.getOrElse((_) => []);
+    final folders = <String, Folder>{};
+    final directories = paths.where((p) => Directory(p).existsSync());
 
-        return Right(folders);
-      },
-    );
+    for (final folderPath in directories) {
+      final name = _fileSystemAdapter.getDirectoryName(folderPath);
+      final folderResult = await loadFolder(folderPath, name);
+      folderResult.fold(
+        (failure) => null,
+        (folder) => folders[name] = folder,
+      );
+    }
+
+    return Right(folders);
   }
 
   Future<Either<Failure, Folder>> loadFolder(String path, String name) async {

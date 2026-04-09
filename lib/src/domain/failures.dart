@@ -1,5 +1,5 @@
 /// Base failure class for all errors in this library.
-class Failure implements Exception {
+abstract class Failure implements Exception {
   const Failure(this.message);
 
   final String message;
@@ -63,4 +63,85 @@ class PropertyNotFoundFailure extends Failure {
 class InvalidMarkdownFailure extends Failure {
   const InvalidMarkdownFailure(String reason)
       : super('Invalid markdown: $reason');
+}
+
+/// Note has no path set.
+class NoteHasNoPathFailure extends Failure {
+  const NoteHasNoPathFailure() : super('Note has no path');
+}
+
+/// Cannot reload: vault was not loaded.
+class CannotReloadFailure extends Failure {
+  const CannotReloadFailure() : super('Cannot reload: vault was not loaded');
+}
+
+/// Failed to list directory.
+class ListDirectoryFailure extends Failure {
+  const ListDirectoryFailure(String reason)
+      : super('Failed to list directory: $reason');
+}
+
+/// Failed to check file existence.
+class CheckFileFailure extends Failure {
+  const CheckFileFailure(String reason)
+      : super('Failed to check file: $reason');
+}
+
+/// Failed to check directory existence.
+class CheckDirectoryFailure extends Failure {
+  const CheckDirectoryFailure(String reason)
+      : super('Failed to check directory: $reason');
+}
+
+/// Failed to read file.
+class ReadFileFailure extends Failure {
+  const ReadFileFailure(String reason) : super('Failed to read file: $reason');
+}
+
+/// Failed to write file.
+class WriteFileFailure extends Failure {
+  const WriteFileFailure(String reason)
+      : super('Failed to write file: $reason');
+}
+
+/// Failed to delete file.
+class DeleteFileFailure extends Failure {
+  const DeleteFileFailure(String reason)
+      : super('Failed to delete file: $reason');
+}
+
+/// Failed to create directory.
+class CreateDirectoryFailure extends Failure {
+  const CreateDirectoryFailure(String reason)
+      : super('Failed to create directory: $reason');
+}
+
+/// Failed to delete directory.
+class DeleteDirectoryFailure extends Failure {
+  const DeleteDirectoryFailure(String reason)
+      : super('Failed to delete directory: $reason');
+}
+
+/// Failed to read file bytes.
+class ReadFileBytesFailure extends Failure {
+  const ReadFileBytesFailure(String reason)
+      : super('Failed to read file bytes: $reason');
+}
+
+/// Failed to write file bytes.
+class WriteFileBytesFailure extends Failure {
+  const WriteFileBytesFailure(String reason)
+      : super('Failed to write file bytes: $reason');
+}
+
+/// Failed to get file size.
+class GetFileSizeFailure extends Failure {
+  const GetFileSizeFailure(String reason)
+      : super('Failed to get file size: $reason');
+}
+
+/// Failed to start watching vault.
+class WatchFailure extends Failure {
+  const WatchFailure(String reason)
+      : super('Failed to start watching: $reason');
 }
