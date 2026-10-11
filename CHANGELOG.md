@@ -13,10 +13,16 @@ what has shipped and the decisions that have been made.
 ### Added
 
 - `BACKLOG.md` - open and pending items only, including every build and analysis problem found and every divergence from the `staylorx/dart-flutter-bible` doctrine, each written as `Deviation: <path> - <what diverges and why>`.
+- CI workflow (`.github/workflows/ci.yml`) running `dart analyze` and `dart test` on push to main and pull requests; melos is set up with the single published package as the workspace root (`useRootAsPackage`) and `analyze`/`test`/`clean:deep` scripts wired as the single CI entry point.
 
 ### Changed
 
 - `CHANGELOG.md` reformatted to Keep a Changelog: bracketed version headings with bare ISO dates, standard change headings (`Added`, `Changed`, `Fixed`), and this `[Unreleased]` section.
+
+### Fixed
+
+- Domain entities (`Note`, `Attachment`, `Folder`, `Link`, `Vault`, `Property`) changed from `with EquatableMixin` to `extends Equatable`, keeping their hand-written `props` getters; resolves the `deprecated_member_use` infos from equatable 2.1.0 and makes `dart analyze` green.
+- README usage samples updated to the shipped named parameters (`createNote(title: ...)`, `createFolder(name: ...)`, `findNote(title: ...)`, `createProperty(key: ..., value: ...)`, `createLink(targetTitle: ...)`) so the copy-paste examples compile.
 
 ### Decisions
 
