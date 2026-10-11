@@ -17,7 +17,7 @@ jobs:
         run: dart pub get
 
       - name: Analyze
-        run: dart analyze
+        run: dart run melos run analyze
 
       - name: Test
-        run: dart test
+        run: dart run melos run test
