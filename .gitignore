@@ -42,3 +42,6 @@ doc/api/
 *.log
 
 .obsidian/
+
+# melos noise
+.melos/
