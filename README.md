@@ -8,7 +8,7 @@ This library is built around [fpdart](https://pub.dev/packages/fpdart)'s `TaskEi
 
 ```dart
 // Each operation returns TaskEither
-final result = await vault.createNote('Hello').run();
+final result = await vault.createNote(title: 'Hello').run();
 
 // Handle the Either
 result.fold(
@@ -35,7 +35,7 @@ extension TaskEitherExt<R, L> on TaskEither<R, L> {
 }
 
 // Now you can use:
-final note = await vault.createNote('Hello').toFuture();
+final note = await vault.createNote(title: 'Hello').toFuture();
 ```
 
 ## Features
@@ -64,10 +64,10 @@ void main() async {
   final vault = vaultResult.fold((f) => throw Exception(f), (v) => v);
   
   // Create a note
-  await vault.createNote('Hello', content: 'World').run();
+  await vault.createNote(title: 'Hello', content: 'World').run();
   
   // Find your note
-  final note = vault.findNote('Hello');
+  final note = vault.findNote(title: 'Hello');
   print(note?.title); // 'Hello'
 }
 ```
@@ -79,10 +79,10 @@ void main() async {
 | `ObsidianVault.create(path: 'path', name: 'name')` | Creates new vault directory |
 | `ObsidianVault.load(path: 'path')` | Loads existing vault |
 | `vault.refresh()` | Reloads vault from disk |
-| `vault.createNote(title, content)` | Creates a note |
-| `vault.createFolder(name)` | Creates a folder |
-| `note.createProperty(key, value)` | Adds frontmatter |
-| `note.createLink(target)` | Adds wiki link |
+| `vault.createNote(title: 'title', content: 'content')` | Creates a note |
+| `vault.createFolder(name: 'name')` | Creates a folder |
+| `note.createProperty(key: 'key', value: value)` | Adds frontmatter |
+| `note.createLink(targetTitle: 'target')` | Adds wiki link |
 
 ## Examples
 
