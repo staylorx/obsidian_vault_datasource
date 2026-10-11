@@ -3,7 +3,7 @@ import 'folder.dart';
 import 'note.dart';
 
 /// Represents an entire Obsidian vault with its notes and folders.
-class Vault with EquatableMixin {
+class Vault extends Equatable {
   const Vault({
     required this.name,
     this.rootFolder = const Folder(name: ''),

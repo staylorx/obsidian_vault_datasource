@@ -4,7 +4,7 @@ import 'property.dart';
 import 'link.dart';
 
 /// Represents a single note in an Obsidian vault.
-class Note with EquatableMixin {
+class Note extends Equatable {
   const Note({
     required this.title,
     this.content = '',

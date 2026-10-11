@@ -10,7 +10,7 @@ enum PropertyType {
 }
 
 /// Represents a frontmatter property in an Obsidian note.
-class Property with EquatableMixin {
+class Property extends Equatable {
   const Property({
     required this.key,
     required this.value,
